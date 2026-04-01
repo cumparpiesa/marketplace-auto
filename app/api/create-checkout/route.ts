@@ -1,47 +1,33 @@
-import Stripe from "stripe";
-import { NextResponse } from "next/server";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+import { NextResponse } from "next/server"
+import Stripe from "stripe"
 
 export async function POST(req: Request) {
   try {
-    const { plan, userId } = await req.json();
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
-    console.log("PLAN:", plan);
-    console.log("USER:", userId);
-
-    const priceMap: any = {
-      pro: "price_1TGeBWGUUQj4RS9kR4f2Qjnt",       // 🔥 PUNE DIN STRIPE
-      business: "price_1TGebhGUUQj4RS9knPXOf2yl",
-    };
-
-    const priceId = priceMap[plan];
-
-    if (!priceId) {
-      return NextResponse.json({ error: "Plan invalid" }, { status: 400 });
-    }
+    const body = await req.json()
 
     const session = await stripe.checkout.sessions.create({
-      mode: "subscription",
       payment_method_types: ["card"],
+      mode: "payment",
       line_items: [
         {
-          price: priceId,
+          price_data: {
+            currency: "ron",
+            product_data: {
+              name: "Promovare anunț",
+            },
+            unit_amount: 5000, // 50 lei
+          },
           quantity: 1,
         },
       ],
-      success_url: "http://localhost:3000",
-      cancel_url: "http://localhost:3000",
-      metadata: {
-        userId,
-        plan,
-      },
-    });
+      success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL}/cancel`,
+    })
 
-    return NextResponse.json({ url: session.url });
-
+    return NextResponse.json({ url: session.url })
   } catch (err: any) {
-    console.error("STRIPE ERROR:", err.message);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
