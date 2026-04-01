@@ -1,113 +1,61 @@
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from "@/lib/supabaseClient"
 
-const supabase = createClient(
-  'https://tzkdiiezabjitzpzqjop.supabase.co',
-  'sb_publishable_J7H0bx0C5kqcLjVYAbSfCA_NGBDXBRL'
-)
+// 🔥 tip pentru params (fix pentru eroarea ta)
+type Props = {
+  params: {
+    id: string
+  }
+}
 
-export default async function ProductPage({ params }) {
+export default async function ProductPage({ params }: Props) {
   const { id } = params
 
-  const { data: product } = await supabase
-    .from('products')
-    .select('*')
-    .eq('id', id)
+  // 🔥 fetch produs din Supabase
+  const { data: product, error } = await supabase
+    .from("anunturi")
+    .select("*")
+    .eq("id", id)
     .single()
 
-  if (!product) {
-    return <div>Produsul nu există</div>
+  if (error) {
+    return <div>Eroare: {error.message}</div>
   }
 
-  const whatsappLink = product.phone
-    ? `https://wa.me/4${product.phone.replace(/^0/, '')}`
-    : '#'
+  if (!product) {
+    return <div>Produs inexistent</div>
+  }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={styles.container}>
+      <h1>{product.titlu}</h1>
 
-      <a href="/">← Înapoi</a>
-
-      <div style={{
-        display: 'flex',
-        gap: 30,
-        marginTop: 20
-      }}>
-
-        {/* IMAGE */}
+      {product.imagine && (
         <img
-          src={product.image_url || 'https://picsum.photos/500'}
-          style={{
-            width: 400,
-            height: 300,
-            objectFit: 'cover',
-            borderRadius: 10
-          }}
+          src={product.imagine}
+          alt={product.titlu}
+          style={styles.image}
         />
+      )}
 
-        {/* INFO */}
-        <div>
+      <p><strong>Mașină:</strong> {product.masina}</p>
+      <p><strong>Oraș:</strong> {product.oras}</p>
 
-          <h1>{product.title}</h1>
-
-          <p style={{
-            fontSize: 28,
-            color: 'green',
-            fontWeight: 'bold'
-          }}>
-            {product.price} lei
-          </p>
-
-          <p><strong>Categorie:</strong> {product.category}</p>
-
-          {/* 📞 TELEFON */}
-          {product.phone && (
-            <p style={{ marginTop: 10 }}>
-              📞 {product.phone}
-            </p>
-          )}
-
-          {/* 🔥 BUTTONE */}
-          <div style={{ marginTop: 20, display: 'flex', gap: 10 }}>
-
-            {/* WhatsApp */}
-            <a
-              href={whatsappLink}
-              target="_blank"
-              style={{
-                background: '#25D366',
-                color: 'white',
-                padding: '10px 15px',
-                borderRadius: 8,
-                textDecoration: 'none',
-                fontWeight: 'bold'
-              }}
-            >
-              WhatsApp
-            </a>
-
-            {/* Telefon */}
-            {product.phone && (
-              <a
-                href={`tel:${product.phone}`}
-                style={{
-                  background: '#2563eb',
-                  color: 'white',
-                  padding: '10px 15px',
-                  borderRadius: 8,
-                  textDecoration: 'none',
-                  fontWeight: 'bold'
-                }}
-              >
-                Sună
-              </a>
-            )}
-
-          </div>
-
-        </div>
-
-      </div>
-
+      <p>{product.descriere}</p>
     </div>
   )
+}
+
+// 🔥 styles fără erori TypeScript
+const styles = {
+  container: {
+    maxWidth: 600,
+    margin: "40px auto",
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    gap: 12,
+  },
+  image: {
+    width: "100%",
+    borderRadius: 8,
+  },
 }
