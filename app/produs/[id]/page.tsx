@@ -1,16 +1,18 @@
 import { supabase } from "@/lib/supabaseClient"
 
+// 🔥 tip pentru params (fix pentru eroarea ta)
 type Props = {
   params: {
     id: string
   }
 }
 
-export default async function UserPage({ params }: Props) {
+export default async function ProductPage({ params }: Props) {
   const { id } = params
 
-  const { data: profile, error } = await supabase
-    .from("profiles")
+  // 🔥 fetch produs din Supabase
+  const { data: product, error } = await supabase
+    .from("anunturi")
     .select("*")
     .eq("id", id)
     .single()
@@ -19,22 +21,31 @@ export default async function UserPage({ params }: Props) {
     return <div>Eroare: {error.message}</div>
   }
 
-  if (!profile) {
-    return <div>User inexistent</div>
+  if (!product) {
+    return <div>Produs inexistent</div>
   }
 
   return (
     <div style={styles.container}>
-      <h1>{profile.nume}</h1>
+      <h1>{product.titlu}</h1>
 
-      <p><strong>Oraș:</strong> {profile.oras}</p>
-      <p><strong>Telefon:</strong> {profile.telefon}</p>
+      {product.imagine && (
+        <img
+          src={product.imagine}
+          alt={product.titlu}
+          style={styles.image}
+        />
+      )}
 
-      <p>{profile.descriere}</p>
+      <p><strong>Mașină:</strong> {product.masina}</p>
+      <p><strong>Oraș:</strong> {product.oras}</p>
+
+      <p>{product.descriere}</p>
     </div>
   )
 }
 
+// 🔥 styles fără erori TypeScript
 const styles = {
   container: {
     maxWidth: 600,
@@ -42,5 +53,9 @@ const styles = {
     display: "flex" as const,
     flexDirection: "column" as const,
     gap: 12,
+  },
+  image: {
+    width: "100%",
+    borderRadius: 8,
   },
 }

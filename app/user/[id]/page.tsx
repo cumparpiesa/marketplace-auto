@@ -1,46 +1,46 @@
-import { supabase } from '@/lib/supabase'
+import { supabase } from "@/lib/supabaseClient"
 
-export default async function UserPage({ params }) {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', params.id)
+type Props = {
+  params: {
+    id: string
+  }
+}
+
+export default async function UserPage({ params }: Props) {
+  const { id } = params
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
     .single()
 
-  const { data: offers } = await supabase
-    .from('offers')
-    .select('*')
-    .eq('user_id', params.id)
+  if (error) {
+    return <div>Eroare: {error.message}</div>
+  }
 
-  if (!profile) return <p>User inexistent</p>
+  if (!profile) {
+    return <div>User inexistent</div>
+  }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>
-        {profile.type === 'firma'
-          ? profile.company_name
-          : profile.name}
-      </h1>
+    <div style={styles.container}>
+      <h1>{profile.nume}</h1>
 
-      {profile.verified && <p>✔️ Firmă verificată</p>}
+      <p><strong>Oraș:</strong> {profile.oras}</p>
+      <p><strong>Telefon:</strong> {profile.telefon}</p>
 
-      <p>Oraș: {profile.city}</p>
-
-      {profile.type === 'firma' && (
-        <>
-          <p>CUI: {profile.cui}</p>
-          <p>Adresă: {profile.address}</p>
-        </>
-      )}
-
-      <h2>Oferte</h2>
-
-      {offers?.map((o) => (
-        <div key={o.id}>
-          <p>{o.message}</p>
-          <p>{o.price} lei</p>
-        </div>
-      ))}
+      <p>{profile.descriere}</p>
     </div>
   )
+}
+
+const styles = {
+  container: {
+    maxWidth: 600,
+    margin: "40px auto",
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    gap: 12,
+  },
 }
