@@ -1,47 +1,33 @@
-import { headers } from "next/headers";
-import { NextResponse } from "next/server";
-import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { headers } from "next/headers"
+import { NextResponse } from "next/server"
+import Stripe from "stripe"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(req: Request) {
-  const body = await req.text();
-  const sig = headers().get("stripe-signature")!;
+  const body = await req.text()
 
-  let event;
+  // 🔥 FIX AICI
+  const headerList = await headers()
+  const sig = headerList.get("stripe-signature")
+
+  if (!sig) {
+    return NextResponse.json({ error: "No signature" }, { status: 400 })
+  }
+
+  let event: Stripe.Event
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      sig,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch (err) {
-    console.error("Webhook signature error:", err);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+    event = stripe.webhooks.constructEvent(body, sig, webhookSecret)
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 400 })
   }
 
-  console.log("EVENT:", event.type);
-
+  // 🔥 aici tratezi evenimente Stripe
   if (event.type === "checkout.session.completed") {
-    const session: any = event.data.object;
-
-    console.log("SESSION:", session);
-
-    await supabase
-      .from("profiles")
-      .update({
-        stripe_customer_id: session.customer,
-        plan: session.metadata.plan,
-      })
-      .eq("id", session.metadata.userId);
+    console.log("Plată completată")
   }
 
-  return NextResponse.json({ received: true });
+  return NextResponse.json({ received: true })
 }
