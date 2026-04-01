@@ -1,44 +1,38 @@
-import Link from "next/link"
+import { createSupabaseServer } from "@/lib/supabase-server"
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createSupabaseServer()
+
+  const { data: firme } = await supabase
+    .from("firme")
+    .select("*")
+    .order("id", { ascending: false })
+
   return (
-    <div style={container}>
-      <h1>Marketplace Auto</h1>
+    <div style={{ padding: 20 }}>
+      <h1>Firme</h1>
 
-      <div style={menu}>
-        <Link href="/catalog" style={link}>
-          Catalog piese auto
-        </Link>
+      {!firme?.length && <p>Nu există firme încă</p>}
 
-        <Link href="/dezmembrari" style={link}>
-          Dezmembrări auto
-        </Link>
+      {firme?.map((firma: any) => (
+        <div
+          key={firma.id}
+          style={{
+            border: "1px solid #ccc",
+            padding: 10,
+            marginBottom: 10,
+          }}
+        >
+          <h2>{firma.nume}</h2>
+          <p>{firma.oras}</p>
+          <p>{firma.telefon}</p>
+          <p>{firma.descriere}</p>
 
-        <Link href="/cereri" style={link}>
-          Cereri piese auto
-        </Link>
-
-        <Link href="/adauga-cerere" style={link}>
-          Cere ofertă piese
-        </Link>
-      </div>
+          {firma.image_url && (
+            <img src={firma.image_url} width={200} />
+          )}
+        </div>
+      ))}
     </div>
   )
-}
-
-const container = {
-  maxWidth: "900px",
-  margin: "40px auto",
-}
-
-const menu = {
-  display: "flex",
-  gap: "20px",
-  marginTop: "30px",
-}
-
-const link = {
-  fontWeight: "600",
-  textDecoration: "none",
-  color: "#1e3a8a",
 }
