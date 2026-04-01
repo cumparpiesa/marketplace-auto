@@ -8,8 +8,8 @@ const styles = {
     display: "flex" as const,
     flexDirection: "column" as const,
     gap: 10,
-  },
-};
+  }
+}
 
 export default function AdaugaAnunt() {
   const [form, setForm] = useState({
