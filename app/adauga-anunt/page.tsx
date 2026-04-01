@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
 
 const styles = {
   container: {
@@ -9,7 +9,7 @@ const styles = {
     flexDirection: "column" as const,
     gap: 10,
   },
-}
+};
 
 export default function AdaugaAnunt() {
   const [form, setForm] = useState({
@@ -17,29 +17,33 @@ export default function AdaugaAnunt() {
     masina: "",
     oras: "",
     descriere: "",
-  })
+  });
 
-  const [poza, setPoza] = useState<File | null>(null)
+  const [poza, setPoza] = useState<File | null>(null);
 
   const handleSubmit = async () => {
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) return alert("Login necesar")
+    const { data: userData } = await supabase.auth.getUser();
 
-    let imageUrl = ""
+    if (!userData.user) {
+      alert("Login necesar");
+      return;
+    }
+
+    let imageUrl = "";
 
     if (poza) {
-      const fileName = Date.now() + "_" + poza.name
+      const fileName = Date.now() + "_" + poza.name;
 
       const { data, error } = await supabase.storage
         .from("poze")
-        .upload(fileName, poza)
+        .upload(fileName, poza);
 
       if (error) {
-        alert("Eroare upload imagine")
-        return
+        alert("Eroare upload imagine");
+        return;
       }
 
-      imageUrl = data?.path || ""
+      imageUrl = data?.path || "";
     }
 
     const { error } = await supabase.from("anunturi").insert([
@@ -48,16 +52,16 @@ export default function AdaugaAnunt() {
         imagine: imageUrl,
         user_id: userData.user.id,
       },
-    ])
+    ]);
 
     if (error) {
-      alert("Eroare salvare anunt")
-      return
+      alert("Eroare salvare anunt");
+      return;
     }
 
-    alert("Anunț adăugat!")
-    window.location.href = "/dezmembrari"
-  }
+    alert("Anunț adăugat!");
+    window.location.href = "/dezmembrari";
+  };
 
   return (
     <div style={styles.container}>
@@ -102,5 +106,5 @@ export default function AdaugaAnunt() {
         Publică
       </button>
     </div>
-  )
+  );
 }
