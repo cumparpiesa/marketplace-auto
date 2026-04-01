@@ -2,7 +2,7 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-// 🔥 fără apiVersion (rezolvă toate erorile)
+// 🔥 fără apiVersion (IMPORTANT)
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
 export async function POST(req: Request) {
