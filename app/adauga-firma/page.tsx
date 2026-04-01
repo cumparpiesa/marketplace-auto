@@ -1,97 +1,100 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-export default function AdaugaFirma() {
-  const [form, setForm] = useState({
-    nume: "",
-    oras: "",
-    telefon: "",
-    descriere: "",
-  })
+export default function FirmePage() {
+  const [firme, setFirme] = useState<any[]>([])
 
-  const [file, setFile] = useState<File | null>(null)
+  useEffect(() => {
+    const fetchFirme = async () => {
+      const { data, error } = await supabase
+        .from("firme")
+        .select("*")
+        .order("created_at", { ascending: false })
 
-  const handleSubmit = async () => {
-    const { data: userData } = await supabase.auth.getUser()
-    if (!userData.user) return alert("Login necesar")
-
-    let image_url = ""
-
-    // upload imagine
-    if (file) {
-      const fileName = Date.now() + "-" + file.name
-
-      const { error: uploadError } = await supabase.storage
-        .from("images")
-        .upload(fileName, file)
-
-      if (uploadError) return alert(uploadError.message)
-
-      const { data } = supabase.storage
-        .from("images")
-        .getPublicUrl(fileName)
-
-      image_url = data.publicUrl
+      if (!error) setFirme(data || [])
     }
 
-    const { error } = await supabase.from("firme").insert([
-      {
-        ...form,
-        image_url,
-        user_id: userData.user.id,
-      },
-    ])
-
-    if (error) alert(error.message)
-    else {
-      alert("Firmă adăugată!")
-      window.location.href = "/"
-    }
-  }
+    fetchFirme()
+  }, [])
 
   return (
     <div style={styles.container}>
-      <h1>Adaugă firmă</h1>
+      <h1>Firme</h1>
 
-      <input
-        placeholder="Nume firmă"
-        onChange={(e) => setForm({ ...form, nume: e.target.value })}
-      />
+      {firme.map((firma) => (
+        <div key={firma.id} style={styles.card}>
+          <h2>
+            {firma.nume}{" "}
+            {firma.plan === "business" && (
+              <span style={styles.badge}>PRO</span>
+            )}
+          </h2>
 
-      <input
-        placeholder="Oraș"
-        onChange={(e) => setForm({ ...form, oras: e.target.value })}
-      />
+          <p>{firma.oras}</p>
+          <p>{firma.telefon}</p>
+          <p>{firma.descriere}</p>
 
-      <input
-        placeholder="Telefon"
-        onChange={(e) => setForm({ ...form, telefon: e.target.value })}
-      />
+          {/* 🔥 BUTON PROMOVARE */}
+          {firma.plan !== "business" && (
+            <button
+              onClick={async () => {
+                const res = await fetch("/api/create-checkout", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    firmaId: firma.id,
+                    plan: "business",
+                  }),
+                })
 
-      <textarea
-        placeholder="Descriere firmă"
-        onChange={(e) => setForm({ ...form, descriere: e.target.value })}
-      />
-
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-      />
-
-      <button onClick={handleSubmit}>Salvează</button>
+                const data = await res.json()
+                window.location.href = data.url
+              }}
+              style={styles.button}
+            >
+              Promovează (300 lei)
+            </button>
+          )}
+        </div>
+      ))}
     </div>
   )
 }
 
-// 🔥 FIX FINAL (asta rezolvă eroarea Vercel)
+// 🎨 STYLES
 const styles: any = {
   container: {
-    maxWidth: 500,
+    maxWidth: 800,
     margin: "40px auto",
     display: "flex",
     flexDirection: "column",
-    gap: 12,
+    gap: 20,
+  },
+  card: {
+    border: "1px solid #ddd",
+    padding: 20,
+    borderRadius: 8,
+    background: "#fff",
+  },
+  button: {
+    marginTop: 10,
+    background: "green",
+    color: "white",
+    padding: "10px 16px",
+    borderRadius: 6,
+    cursor: "pointer",
+    border: "none",
+  },
+  badge: {
+    background: "gold",
+    color: "black",
+    padding: "2px 8px",
+    borderRadius: 4,
+    fontSize: 12,
+    marginLeft: 10,
   },
 }
