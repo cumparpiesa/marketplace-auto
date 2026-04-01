@@ -3,9 +3,13 @@ import Stripe from "stripe"
 
 export async function POST(req: Request) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("Missing STRIPE_SECRET_KEY")
+    }
 
-    const body = await req.json()
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2024-06-20",
+    })
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
