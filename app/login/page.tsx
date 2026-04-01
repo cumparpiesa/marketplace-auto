@@ -16,7 +16,8 @@ export default function LoginPage() {
     if (error) {
       alert(error.message)
     } else {
-      window.location.href = "/" // 🔥 asta e corect
+      alert("Login reușit!")
+      window.location.href = "/"
     }
   }
 
@@ -25,13 +26,16 @@ export default function LoginPage() {
       <h1>Login</h1>
 
       <input
+        type="email"
         placeholder="Email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
 
       <input
         type="password"
         placeholder="Parolă"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
 
@@ -40,10 +44,11 @@ export default function LoginPage() {
   )
 }
 
-const styles = {
+// 🔥 FIX FINAL pentru Vercel (fără erori TypeScript)
+const styles: any = {
   container: {
     maxWidth: 400,
-    margin: "60px auto",
+    margin: "40px auto",
     display: "flex",
     flexDirection: "column",
     gap: 10,
