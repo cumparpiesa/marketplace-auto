@@ -2,8 +2,8 @@ import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-  apiVersion: "2026-03-25.dahlia",
-})
+// 🔥 fără apiVersion (rezolvă toate erorile)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
 export async function POST(req: Request) {
   try {
