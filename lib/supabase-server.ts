@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr"
 import { cookies } from "next/headers"
 
-export function createClient() {
+export function createSupabaseServer() {
   const cookieStore = cookies()
 
   return createServerClient(
@@ -12,15 +12,11 @@ export function createClient() {
         get(name: string) {
           return cookieStore.get(name)?.value
         },
-
-        // 🔥 IMPORTANT: nu mai folosim getAll
-        getAll() {
-          return []
+        set(name: string, value: string, options: any) {
+          cookieStore.set({ name, value, ...options })
         },
-
-        // 🔥 NU mai setăm cookies aici (evită eroarea)
-        setAll() {
-          // DO NOTHING
+        remove(name: string, options: any) {
+          cookieStore.set({ name, value: "", ...options })
         },
       },
     }
