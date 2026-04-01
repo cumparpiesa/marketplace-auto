@@ -1,31 +1,24 @@
-'use client'
+"use client"
 
-import { useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { Suspense } from "react"
+import { useSearchParams } from "next/navigation"
 
-export default function SuccessBoost() {
-  const params = useSearchParams()
+function SuccessContent() {
+  const searchParams = useSearchParams()
+  const session = searchParams.get("session_id")
 
-  useEffect(() => {
-    async function run() {
-      const id = params.get('id')
-      if (!id) return
+  return (
+    <div>
+      <h1>Plata reușită 🎉</h1>
+      <p>Session: {session}</p>
+    </div>
+  )
+}
 
-      const expires = new Date()
-      expires.setDate(expires.getDate() + 7) // 🔥 7 zile
-
-      await supabase
-        .from('requests')
-        .update({
-          boosted: true,
-          boost_expires_at: expires
-        })
-        .eq('id', id)
-    }
-
-    run()
-  }, [])
-
-  return <h1>🚀 Boost activ 7 zile!</h1>
+export default function Page() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SuccessContent />
+    </Suspense>
+  )
 }
