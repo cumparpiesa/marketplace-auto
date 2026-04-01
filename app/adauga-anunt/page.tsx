@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
@@ -7,8 +9,7 @@ const styles = {
     flexDirection: "column" as const,
     gap: 10,
   }
-}
-export default function AdaugaAnunt() {
+}export default function AdaugaAnunt() {
   const [form, setForm] = useState({
     titlu: "",
     masina: "",
