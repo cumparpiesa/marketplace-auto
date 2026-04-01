@@ -11,10 +11,12 @@ export default function FirmePage() {
   }, [])
 
   const fetchFirme = async () => {
-    const { data, error } = await supabase.from("firme").select("*")
+    const { data } = await supabase
+      .from("firme")
+      .select("*")
+      .order("is_pro", { ascending: false })
 
-    if (error) console.log(error)
-    else setFirme(data || [])
+    setFirme(data || [])
   }
 
   const promoveaza = async () => {
@@ -39,17 +41,15 @@ export default function FirmePage() {
             <img src={firma.image_url} style={styles.image} />
           )}
 
+          {firma.is_pro && (
+            <div style={styles.proBadge}>⭐ PROMOVAT</div>
+          )}
+
           <h2>{firma.nume}</h2>
           <p>{firma.oras}</p>
           <p>{firma.telefon}</p>
           <p>{firma.descriere}</p>
 
-          {/* BADGE PRO */}
-          {firma.is_pro && (
-            <span style={styles.badge}>PRO</span>
-          )}
-
-          {/* BUTON PROMOVARE */}
           {!firma.is_pro && (
             <button style={styles.button} onClick={promoveaza}>
               🚀 Promovează (300 lei)
@@ -75,7 +75,7 @@ const styles: any = {
     objectFit: "cover",
     borderRadius: 10,
   },
-  badge: {
+  proBadge: {
     position: "absolute",
     top: 10,
     right: 10,
