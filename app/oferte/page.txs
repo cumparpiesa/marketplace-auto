@@ -1,0 +1,83 @@
+"use client"
+
+import { useState } from "react"
+import { createClient } from "@supabase/supabase-js"
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+export default function OfertePage() {
+  const [price, setPrice] = useState("")
+  const [message, setMessage] = useState("")
+
+  const handleSend = async () => {
+    const { data } = await supabase.auth.getUser()
+
+    if (!data.user) {
+      alert("Nu ești logat")
+      return
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", data.user.id)
+      .single()
+
+    if (!profile) return
+
+    // 🔴 verificare PRO
+    if (!profile.is_pro) {
+      alert("Trebuie abonament PRO")
+      return
+    }
+
+    // 🔴 verificare credite
+    if (profile.credits < 5) {
+      alert("Nu ai suficiente credite")
+      return
+    }
+
+    // 🟢 salvează ofertă
+    const { error } = await supabase.from("oferte").insert({
+      user_id: data.user.id,
+      price,
+      message,
+    })
+
+    if (error) {
+      alert("Eroare")
+      return
+    }
+
+    // 🟢 scade credite
+    await supabase
+      .from("profiles")
+      .update({ credits: profile.credits - 5 })
+      .eq("id", data.user.id)
+
+    alert("Ofertă trimisă!")
+  }
+
+  return (
+    <div style={{ padding: 40 }}>
+      <h1>Trimite ofertă</h1>
+
+      <input
+        placeholder="Preț"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+      />
+
+      <textarea
+        placeholder="Mesaj"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+      />
+
+      <button onClick={handleSend}>Trimite</button>
+    </div>
+  )
+}
