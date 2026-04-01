@@ -1,14 +1,13 @@
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-const styles: any = {
+const styles = {
   container: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 10
+    display: "flex" as const,
+    flexDirection: "column" as const,
+    gap: 10,
   }
 }
-
 export default function AdaugaAnunt() {
   const [form, setForm] = useState({
     titlu: "",
