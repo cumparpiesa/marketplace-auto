@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { supabaseServer } from "../../lib/supabaseServer"
+import { supabase } from "../lib/supabaseClient" // 🔥 FIX
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null)
@@ -34,7 +34,6 @@ export default function Navbar() {
       {/* DREAPTA */}
       <div style={styles.right}>
 
-        {/* BUTOANE ADAUGARE */}
         <Link href="/adauga-piesa" style={styles.addBtn}>+ Piesă</Link>
         <Link href="/adauga-dezmembrare" style={styles.addBtn}>+ Dezmembrare</Link>
         <Link href="/adauga-cerere" style={styles.addBtn}>+ Cerere</Link>
@@ -47,7 +46,6 @@ export default function Navbar() {
         {user ? (
           <>
             <span style={styles.email}>{user.email}</span>
-
             <span style={styles.proBadge}>PRO</span>
 
             <button onClick={logout} style={styles.logout}>
@@ -60,83 +58,4 @@ export default function Navbar() {
       </div>
     </div>
   )
-}
-
-const styles = {
-  nav: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "14px 24px",
-    background: "#1e3a8a",
-    color: "white",
-  },
-
-  left: {
-    display: "flex",
-    gap: 25,
-    alignItems: "center",
-  },
-
-  right: {
-    display: "flex",
-    gap: 10,
-    alignItems: "center",
-  },
-
-  logo: {
-    fontWeight: "bold",
-    fontSize: 22,
-  },
-
-  link: {
-    color: "white",
-    textDecoration: "none",
-    fontSize: 17,
-    fontWeight: 500,
-  },
-
-  addBtn: {
-    background: "#3b82f6",
-    padding: "7px 12px",
-    borderRadius: 6,
-    color: "white",
-    textDecoration: "none",
-    fontSize: 14,
-    fontWeight: 500,
-  },
-
-  proBtn: {
-    background: "#facc15",
-    padding: "7px 14px",
-    borderRadius: 6,
-    color: "black",
-    textDecoration: "none",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-
-  email: {
-    fontSize: 14,
-    marginLeft: 5,
-  },
-
-  proBadge: {
-    background: "gold",
-    color: "black",
-    padding: "4px 7px",
-    borderRadius: 5,
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-
-  logout: {
-    background: "#ef4444",
-    color: "white",
-    border: "none",
-    padding: "7px 12px",
-    borderRadius: 6,
-    cursor: "pointer",
-    fontWeight: "bold",
-  },
 }
