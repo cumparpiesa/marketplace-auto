@@ -1,5 +1,10 @@
-"use client"
-
+const styles: any = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10
+  }
+}
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
@@ -54,13 +59,4 @@ export default function AdaugaAnunt() {
       <button onClick={handleSubmit}>Publică</button>
     </div>
   )
-}
-const styles = {
-  container: {
-    maxWidth: 500,
-    margin: "40px auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
-  },
 }
