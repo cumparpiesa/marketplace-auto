@@ -1,43 +1,41 @@
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
-import { createClient } from "@supabase/supabase-js"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
+  apiVersion: "2024-06-20",
+})
 
 export async function POST(req: Request) {
-  const body = await req.text()
-  const sig = headers().get("stripe-signature")!
-
-  let event: any
-
   try {
-    event = stripe.webhooks.constructEvent(
+    const body = await req.text()
+
+    const headersList = await headers()
+    const sig = headersList.get("stripe-signature")
+
+    if (!sig) {
+      return new NextResponse("No signature", { status: 400 })
+    }
+
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+
+    if (!webhookSecret) {
+      return new NextResponse("Webhook secret missing", { status: 500 })
+    }
+
+    const event = stripe.webhooks.constructEvent(
       body,
       sig,
-      process.env.whsec_0OMECY6iekYVmlFRdZNk7DYBFvWwmp41!
+      webhookSecret
     )
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 400 })
-  }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object
-
-    const user_id = session.metadata?.user_id
-
-    if (user_id) {
-      await supabase
-        .from("firme")
-        .update({ is_pro: true })
-        .eq("user_id", user_id)
+    if (event.type === "checkout.session.completed") {
+      console.log("✅ Payment success")
     }
-  }
 
-  return NextResponse.json({ received: true })
+    return NextResponse.json({ ok: true })
+  } catch (err: any) {
+    console.log("🔥 ERROR:", err.message)
+    return new NextResponse("Error", { status: 500 })
+  }
 }
