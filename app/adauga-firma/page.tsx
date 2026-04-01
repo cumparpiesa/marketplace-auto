@@ -1,142 +1,166 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 
-export default function FirmePage() {
-  const [firme, setFirme] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
+export default function AdaugaFirma() {
+  const [form, setForm] = useState({
+    nume: "",
+    oras: "",
+    telefon: "",
+    descriere: "",
+  })
 
-  useEffect(() => {
-    const fetchFirme = async () => {
-      const { data, error } = await supabase
-        .from("firme")
-        .select("*")
-        .order("plan", { ascending: false }) // 🔥 PRO sus
-        .order("created_at", { ascending: false })
+  const [file, setFile] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
 
-      if (!error) setFirme(data || [])
-      setLoading(false)
+  const handleChange = (e: any) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
+  }
+
+  const handleSubmit = async () => {
+    if (!form.nume || !form.oras || !form.telefon) {
+      return alert("Completează toate câmpurile obligatorii")
     }
 
-    fetchFirme()
-  }, [])
+    setLoading(true)
 
-  if (loading) return <p style={{ textAlign: "center" }}>Se încarcă...</p>
+    const { data: userData } = await supabase.auth.getUser()
+
+    if (!userData.user) {
+      setLoading(false)
+      return alert("Trebuie să fii logat")
+    }
+
+    let image_url = ""
+
+    // 🔥 upload imagine
+    if (file) {
+      const fileName = `${Date.now()}-${file.name}`
+
+      const { error: uploadError } = await supabase.storage
+        .from("images")
+        .upload(fileName, file)
+
+      if (uploadError) {
+        setLoading(false)
+        return alert(uploadError.message)
+      }
+
+      const { data } = supabase.storage
+        .from("images")
+        .getPublicUrl(fileName)
+
+      image_url = data.publicUrl
+    }
+
+    // 🔥 insert în DB
+    const { error } = await supabase.from("firme").insert([
+      {
+        ...form,
+        image_url,
+        user_id: userData.user.id,
+        is_pro: false,
+      },
+    ])
+
+    setLoading(false)
+
+    if (error) {
+      alert(error.message)
+    } else {
+      alert("Firmă adăugată cu succes 🚀")
+      window.location.href = "/"
+    }
+  }
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>Firme</h1>
+      <h1 style={styles.title}>Adaugă firmă</h1>
 
-      {firme.length === 0 && <p>Nu există firme.</p>}
+      <input
+        name="nume"
+        placeholder="Nume firmă"
+        onChange={handleChange}
+        style={styles.input}
+      />
 
-      {firme.map((firma) => (
-        <div key={firma.id} style={styles.card}>
-          {/* HEADER */}
-          <div style={styles.header}>
-            <h2 style={styles.name}>
-              {firma.nume}
-              {firma.plan === "business" && (
-                <span style={styles.badge}>PRO</span>
-              )}
-            </h2>
+      <input
+        name="oras"
+        placeholder="Oraș"
+        onChange={handleChange}
+        style={styles.input}
+      />
 
-            {firma.image_url && (
-              <img src={firma.image_url} style={styles.image} />
-            )}
-          </div>
+      <input
+        name="telefon"
+        placeholder="Telefon"
+        onChange={handleChange}
+        style={styles.input}
+      />
 
-          {/* INFO */}
-          <div style={styles.info}>
-            <p><strong>Oraș:</strong> {firma.oras}</p>
-            <p><strong>Telefon:</strong> {firma.telefon}</p>
-            <p>{firma.descriere}</p>
-          </div>
+      <textarea
+        name="descriere"
+        placeholder="Descriere firmă"
+        onChange={handleChange}
+        style={styles.textarea}
+      />
 
-          {/* 🔥 BUTON PROMOVARE */}
-          {firma.plan !== "business" && (
-            <button
-              onClick={async () => {
-                const res = await fetch("/api/create-checkout", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    firmaId: firma.id,
-                    plan: "business",
-                  }),
-                })
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+        style={styles.file}
+      />
 
-                const data = await res.json()
-                window.location.href = data.url
-              }}
-              style={styles.button}
-            >
-              🚀 Promovează (300 lei)
-            </button>
-          )}
-        </div>
-      ))}
+      {file && <p>📷 {file.name}</p>}
+
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        style={styles.button}
+      >
+        {loading ? "Se salvează..." : "Salvează firmă"}
+      </button>
     </div>
   )
 }
 
-// 🎨 STILURI PRO
 const styles: any = {
   container: {
-    maxWidth: 900,
-    margin: "40px auto",
-    padding: "0 20px",
+    maxWidth: 500,
+    margin: "60px auto",
     display: "flex",
     flexDirection: "column",
-    gap: 20,
+    gap: 15,
+    padding: 20,
+    border: "1px solid #ddd",
+    borderRadius: 10,
+    background: "#fff",
   },
   title: {
     textAlign: "center",
   },
-  card: {
-    border: "1px solid #eee",
-    borderRadius: 12,
-    padding: 20,
-    background: "#fff",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  name: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-  },
-  badge: {
-    background: "gold",
-    color: "black",
-    padding: "4px 10px",
+  input: {
+    padding: 10,
     borderRadius: 6,
-    fontSize: 12,
-    fontWeight: "bold",
+    border: "1px solid #ccc",
   },
-  image: {
-    width: 80,
-    height: 80,
-    objectFit: "cover",
-    borderRadius: 10,
+  textarea: {
+    padding: 10,
+    borderRadius: 6,
+    border: "1px solid #ccc",
+    minHeight: 100,
   },
-  info: {
-    marginTop: 10,
+  file: {
+    padding: 5,
   },
   button: {
-    marginTop: 15,
-    background: "#16a34a",
-    color: "white",
-    padding: "10px 16px",
-    borderRadius: 8,
-    cursor: "pointer",
+    padding: 12,
+    background: "#0070f3",
+    color: "#fff",
     border: "none",
+    borderRadius: 6,
+    cursor: "pointer",
     fontWeight: "bold",
   },
 }
