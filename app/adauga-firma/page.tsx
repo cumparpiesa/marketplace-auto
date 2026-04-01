@@ -19,7 +19,7 @@ export default function AdaugaFirma() {
 
     let image_url = ""
 
-    // 🔥 upload imagine
+    // upload imagine
     if (file) {
       const fileName = Date.now() + "-" + file.name
 
@@ -55,27 +55,38 @@ export default function AdaugaFirma() {
     <div style={styles.container}>
       <h1>Adaugă firmă</h1>
 
-      <input placeholder="Nume firmă"
-        onChange={(e)=>setForm({...form, nume:e.target.value})} />
+      <input
+        placeholder="Nume firmă"
+        onChange={(e) => setForm({ ...form, nume: e.target.value })}
+      />
 
-      <input placeholder="Oraș"
-        onChange={(e)=>setForm({...form, oras:e.target.value})} />
+      <input
+        placeholder="Oraș"
+        onChange={(e) => setForm({ ...form, oras: e.target.value })}
+      />
 
-      <input placeholder="Telefon"
-        onChange={(e)=>setForm({...form, telefon:e.target.value})} />
+      <input
+        placeholder="Telefon"
+        onChange={(e) => setForm({ ...form, telefon: e.target.value })}
+      />
 
-      <textarea placeholder="Descriere firmă"
-        onChange={(e)=>setForm({...form, descriere:e.target.value})} />
+      <textarea
+        placeholder="Descriere firmă"
+        onChange={(e) => setForm({ ...form, descriere: e.target.value })}
+      />
 
-      <input type="file"
-        onChange={(e)=>setFile(e.target.files?.[0] || null)} />
+      <input
+        type="file"
+        onChange={(e) => setFile(e.target.files?.[0] || null)}
+      />
 
       <button onClick={handleSubmit}>Salvează</button>
     </div>
   )
 }
 
-const styles = {
+// 🔥 FIX FINAL (asta rezolvă eroarea Vercel)
+const styles: any = {
   container: {
     maxWidth: 500,
     margin: "40px auto",
