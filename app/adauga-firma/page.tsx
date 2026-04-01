@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
+import { supabaseServer } from "../lib/supabaseServer"
 
 export default function AdaugaFirma() {
   const [form, setForm] = useState({
