@@ -1,4 +1,4 @@
-import { supabaseServer } from "../../lib/supabaseServer"
+import { supabaseServer } from "../@/lib/supabaseServer"
 
 export default async function FirmePage() {
   const { data: firme, error } = await supabaseServer

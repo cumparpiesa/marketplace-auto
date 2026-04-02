@@ -1,4 +1,4 @@
-import { supabaseServer } from "../../lib/supabaseServer"
+import { supabaseServer } from "../@/lib/supabaseServer"
 
 // 🔥 tip pentru params (fix pentru eroarea ta)
 type Props = {
