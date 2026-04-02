@@ -70,9 +70,19 @@ const styles = {
   left: {
     display: "flex",
     gap: "10px",
+    alignItems: "center",
   },
   right: {
     display: "flex",
     gap: "10px",
+    alignItems: "center",
+  },
+  logo: {
+    fontWeight: "bold",
+    fontSize: "18px",
+  },
+  link: {
+    color: "#fff",
+    textDecoration: "none",
   },
 };
