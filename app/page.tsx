@@ -7,18 +7,32 @@ import { supabase } from "@/lib/supabaseClient"
 export default function HomePage() {
   const [firme, setFirme] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
 
-  const fetchFirme = async (searchTerm = "") => {
+  // 🔥 filtre
+  const [search, setSearch] = useState("")
+  const [oras, setOras] = useState("")
+  const [plan, setPlan] = useState("")
+
+  const fetchFirme = async () => {
     setLoading(true)
 
     let query = supabase.from("firme").select("*")
 
-    // 🔥 SEARCH REAL
-    if (searchTerm) {
+    // 🔍 SEARCH
+    if (search) {
       query = query.or(
-        `nume.ilike.%${searchTerm}%,descriere.ilike.%${searchTerm}%,oras.ilike.%${searchTerm}%`
+        `nume.ilike.%${search}%,descriere.ilike.%${search}%,oras.ilike.%${search}%`
       )
+    }
+
+    // 📍 FILTRU ORAȘ
+    if (oras) {
+      query = query.ilike("oras", `%${oras}%`)
+    }
+
+    // ⭐ FILTRU PLAN
+    if (plan) {
+      query = query.eq("plan", plan)
     }
 
     const { data, error } = await query
@@ -27,7 +41,6 @@ export default function HomePage() {
     console.log("ERROR:", error)
 
     if (!error) {
-      // 🔥 PRO sus
       const sorted = (data || []).sort((a, b) => {
         if (a.plan === "pro" && b.plan !== "pro") return -1
         if (a.plan !== "pro" && b.plan === "pro") return 1
@@ -49,23 +62,43 @@ export default function HomePage() {
   return (
     <div style={{ padding: 20 }}>
 
-      {/* 🔍 SEARCH BAR */}
-      <div style={styles.searchBox}>
+      {/* 🔥 FILTRE */}
+      <div style={styles.filters}>
+
         <input
           type="text"
-          placeholder="Caută firmă, oraș, descriere..."
+          placeholder="🔍 Caută firmă..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={styles.input}
         />
 
-        <button onClick={() => fetchFirme(search)} style={styles.button}>
-          Caută
+        <input
+          type="text"
+          placeholder="📍 Oraș"
+          value={oras}
+          onChange={(e) => setOras(e.target.value)}
+          style={styles.input}
+        />
+
+        <select
+          value={plan}
+          onChange={(e) => setPlan(e.target.value)}
+          style={styles.select}
+        >
+          <option value="">Toate</option>
+          <option value="pro">PRO</option>
+          <option value="free">FREE</option>
+        </select>
+
+        <button onClick={fetchFirme} style={styles.button}>
+          Aplică filtre
         </button>
+
       </div>
 
       {/* TITLU */}
-      <h2 style={styles.section}>⭐ Firme recomandate</h2>
+      <h2 style={styles.section}>⭐ Firme</h2>
 
       {loading && <p>Se încarcă...</p>}
       {!loading && firme.length === 0 && <p>Nu s-au găsit rezultate</p>}
@@ -106,13 +139,18 @@ export default function HomePage() {
 }
 
 const styles: any = {
-  searchBox: {
+  filters: {
     display: "flex",
     gap: "10px",
     marginBottom: "20px",
+    flexWrap: "wrap",
   },
   input: {
-    flex: 1,
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+  },
+  select: {
     padding: "10px",
     borderRadius: "6px",
     border: "1px solid #ccc",
