@@ -1,11 +1,11 @@
-import { createSupabaseServer } from "../lib/supabase-server"
+import { supabaseServer } from "@/lib/supabaseServer"
 
 export default async function UserPage({
   params,
 }: {
   params: { id: string }
 }) {
-  const supabase = await createSupabaseServer()
+  const supabase = supabaseServer()
 
   const { data: profile } = await supabase
     .from("profiles")
