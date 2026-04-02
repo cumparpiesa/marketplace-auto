@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabaseClient"
+import { supabase } from "@/lib/supabaseClientClient"
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

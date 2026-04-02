@@ -1,6 +1,6 @@
 "use client"
 
-import { supabase } from "@/lib/supabaseClient"
+import { supabase } from "@/lib/supabaseClientClient"
 
 export default function AbonamentPage() {
   const setPlan = async (plan: string) => {
