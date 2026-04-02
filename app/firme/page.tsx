@@ -87,10 +87,10 @@ const styles = {
   },
 
   image: {
-    width: "100%",
-    height: "180px",
-    objectFit: "cover",
-  },
+  width: "100%",
+  height: "180px",
+  objectFit: "cover" as const,
+},
 
   content: {
     padding: "12px",
