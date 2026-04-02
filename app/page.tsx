@@ -3,16 +3,27 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
+import type { CSSProperties } from "react"
+
+// 🔷 TIP FIRMA
+type Firma = {
+  id: number
+  nume: string
+  oras: string
+  descriere: string
+  image_url?: string
+  plan: "free" | "pro"
+}
 
 export default function HomePage() {
-  const [firme, setFirme] = useState<any[]>([])
+  const [firme, setFirme] = useState<Firma[]>([])
   const [loading, setLoading] = useState(true)
 
   // filtre
   const [search, setSearch] = useState("")
   const [oras, setOras] = useState("")
-  const [plan, setPlan] = useState("toate")
-  const [sort, setSort] = useState("noi")
+  const [plan, setPlan] = useState<"toate" | "free" | "pro">("toate")
+  const [sort, setSort] = useState<"noi" | "vechi">("noi")
 
   useEffect(() => {
     fetchFirme()
@@ -23,37 +34,36 @@ export default function HomePage() {
 
     let query = supabase.from("firme").select("*")
 
-    // 🔍 SEARCH
     if (search) {
       query = query.ilike("nume", `%${search}%`)
     }
 
-    // 📍 ORAȘ
     if (oras) {
       query = query.ilike("oras", `%${oras}%`)
     }
 
-    // ⭐ PLAN
     if (plan !== "toate") {
       query = query.eq("plan", plan)
     }
 
-    // 🔃 SORT
-    if (sort === "noi") {
-      query = query.order("id", { ascending: false })
-    } else {
-      query = query.order("id", { ascending: true })
+    query =
+      sort === "noi"
+        ? query.order("id", { ascending: false })
+        : query.order("id", { ascending: true })
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error("Eroare Supabase:", error)
     }
 
-    const { data } = await query
-
-    setFirme(data || [])
+    setFirme((data as Firma[]) || [])
     setLoading(false)
   }
 
   return (
     <div style={styles.layout}>
-      {/* SIDEBAR FILTRE */}
+      {/* SIDEBAR */}
       <div style={styles.sidebar}>
         <h3>Filtre</h3>
 
@@ -71,13 +81,13 @@ export default function HomePage() {
           style={styles.input}
         />
 
-        <select value={plan} onChange={(e) => setPlan(e.target.value)} style={styles.input}>
+        <select value={plan} onChange={(e) => setPlan(e.target.value as any)} style={styles.input}>
           <option value="toate">Toate</option>
           <option value="free">Free</option>
           <option value="pro">PRO</option>
         </select>
 
-        <select value={sort} onChange={(e) => setSort(e.target.value)} style={styles.input}>
+        <select value={sort} onChange={(e) => setSort(e.target.value as any)} style={styles.input}>
           <option value="noi">Cele mai noi</option>
           <option value="vechi">Cele mai vechi</option>
         </select>
@@ -98,21 +108,22 @@ export default function HomePage() {
         ) : (
           <div style={styles.grid}>
             {firme.map((firma) => (
-              <Link key={firma.id} href={`/firme/${firma.id}`}>
+              <Link key={firma.id} href={`/firme/${firma.id}`} style={{ textDecoration: "none", color: "inherit" }}>
                 <div style={styles.card}>
                   <img
                     src={firma.image_url || "https://via.placeholder.com/400x200"}
                     style={styles.image}
+                    alt={firma.nume}
                   />
+
+                  {firma.plan === "pro" && (
+                    <span style={styles.badge}>PRO</span>
+                  )}
 
                   <div style={styles.cardContent}>
                     <h3>{firma.nume}</h3>
                     <p style={styles.city}>📍 {firma.oras}</p>
                     <p>{firma.descriere}</p>
-
-                    {firma.plan === "pro" && (
-                      <span style={styles.badge}>PRO</span>
-                    )}
 
                     <button style={styles.btn}>Vezi detalii</button>
                   </div>
@@ -126,7 +137,8 @@ export default function HomePage() {
   )
 }
 
-const styles = {
+// 🔷 STYLES TIPATE CORECT
+const styles: Record<string, CSSProperties> = {
   layout: {
     display: "flex",
     maxWidth: "1300px",
@@ -182,12 +194,13 @@ const styles = {
     border: "1px solid #eee",
     background: "#fff",
     position: "relative",
+    transition: "0.2s",
   },
 
   image: {
     width: "100%",
     height: "170px",
-    objectFit: "cover" as const,
+    objectFit: "cover",
   },
 
   cardContent: {
@@ -201,13 +214,14 @@ const styles = {
   },
 
   badge: {
-    position: "absolute" as const,
+    position: "absolute",
     top: "10px",
     left: "10px",
     background: "gold",
     padding: "5px 8px",
     borderRadius: "6px",
     fontSize: "12px",
+    fontWeight: "bold",
   },
 
   btn: {
