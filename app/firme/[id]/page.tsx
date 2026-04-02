@@ -7,65 +7,61 @@ import { supabase } from "@/lib/supabaseClient"
 export default function FirmaPage() {
   const { id } = useParams()
   const [firma, setFirma] = useState<any>(null)
-  const [produse, setProduse] = useState<any[]>([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      // 🔹 ia firma
-      const { data: firmaData } = await supabase
+    const fetchFirma = async () => {
+      const { data } = await supabase
         .from("firme")
         .select("*")
         .eq("id", id)
         .single()
 
-      setFirma(firmaData)
-
-      // 🔹 ia produsele firmei
-      const { data: produseData } = await supabase
-        .from("products")
-        .select("*")
-        .eq("firma_id", id)
-
-      setProduse(produseData || [])
+      setFirma(data)
     }
 
-    fetchData()
+    fetchFirma()
   }, [id])
 
-  if (!firma) return <p>Se încarcă...</p>
+  if (!firma) return <p style={{ padding: 20 }}>Se încarcă...</p>
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={styles.container}>
+
+      <img
+        src={firma.image_url || "https://via.placeholder.com/800x300"}
+        style={styles.image}
+      />
+
       <h1>{firma.nume}</h1>
+
+      <p>📍 {firma.oras}</p>
+
       <p>{firma.descriere}</p>
 
-      <h2 style={{ marginTop: 30 }}>Produse</h2>
+      <p>📞 {firma.telefon}</p>
 
-      <div style={styles.grid}>
-        {produse.map((p) => (
-          <div key={p.id} style={styles.card}>
-            <h3>{p.nume}</h3>
-            <p>{p.descriere}</p>
-            <strong>{p.pret} lei</strong>
-          </div>
-        ))}
-      </div>
+      {firma.plan === "pro" && (
+        <span style={styles.badge}>PRO</span>
+      )}
 
-      {produse.length === 0 && <p>Nu există produse.</p>}
     </div>
   )
 }
 
 const styles = {
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-    gap: "20px",
+  container: {
+    padding: "20px",
   },
-  card: {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "15px",
-    background: "#fff",
+  image: {
+    width: "100%",
+    maxHeight: "300px",
+    objectFit: "cover" as const,
+    marginBottom: "20px",
+  },
+  badge: {
+    background: "gold",
+    padding: "5px 10px",
+    borderRadius: "5px",
+    fontWeight: "bold",
   },
 }
