@@ -5,7 +5,6 @@ import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
 import type { CSSProperties } from "react"
 
-// 🔷 TIP FIRMA
 type Firma = {
   id: number
   nume: string
@@ -19,32 +18,28 @@ export default function HomePage() {
   const [firme, setFirme] = useState<Firma[]>([])
   const [loading, setLoading] = useState(true)
 
-  // filtre
   const [search, setSearch] = useState("")
   const [oras, setOras] = useState("")
   const [plan, setPlan] = useState<"toate" | "free" | "pro">("toate")
   const [sort, setSort] = useState<"noi" | "vechi">("noi")
 
+  // 🔥 AUTO SEARCH (DEBOUNCE)
   useEffect(() => {
-    fetchFirme()
-  }, [])
+    const delay = setTimeout(() => {
+      fetchFirme()
+    }, 400)
+
+    return () => clearTimeout(delay)
+  }, [search, oras, plan, sort])
 
   const fetchFirme = async () => {
     setLoading(true)
 
     let query = supabase.from("firme").select("*")
 
-    if (search) {
-      query = query.ilike("nume", `%${search}%`)
-    }
-
-    if (oras) {
-      query = query.ilike("oras", `%${oras}%`)
-    }
-
-    if (plan !== "toate") {
-      query = query.eq("plan", plan)
-    }
+    if (search) query = query.ilike("nume", `%${search}%`)
+    if (oras) query = query.ilike("oras", `%${oras}%`)
+    if (plan !== "toate") query = query.eq("plan", plan)
 
     query =
       sort === "noi"
@@ -53,29 +48,27 @@ export default function HomePage() {
 
     const { data, error } = await query
 
-    if (error) {
-      console.error("Eroare Supabase:", error)
-    }
+    if (error) console.error(error)
 
     setFirme((data as Firma[]) || [])
     setLoading(false)
   }
 
   return (
-    <div style={styles.layout}>
+    <div style={styles.page}>
       {/* SIDEBAR */}
       <div style={styles.sidebar}>
-        <h3>Filtre</h3>
+        <h3 style={{ marginBottom: 15 }}>Filtre</h3>
 
         <input
-          placeholder="Caută firmă..."
+          placeholder="🔍 Caută firmă..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           style={styles.input}
         />
 
         <input
-          placeholder="Oraș"
+          placeholder="📍 Oraș"
           value={oras}
           onChange={(e) => setOras(e.target.value)}
           style={styles.input}
@@ -91,15 +84,11 @@ export default function HomePage() {
           <option value="noi">Cele mai noi</option>
           <option value="vechi">Cele mai vechi</option>
         </select>
-
-        <button onClick={fetchFirme} style={styles.applyBtn}>
-          Aplică filtre
-        </button>
       </div>
 
       {/* CONTENT */}
       <div style={styles.content}>
-        <h2 style={styles.title}>⭐ Firme</h2>
+        <h2 style={styles.title}>Descoperă firme</h2>
 
         {loading ? (
           <p>Se încarcă...</p>
@@ -108,8 +97,12 @@ export default function HomePage() {
         ) : (
           <div style={styles.grid}>
             {firme.map((firma) => (
-              <Link key={firma.id} href={`/firme/${firma.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-                <div style={styles.card}>
+              <Link
+                key={firma.id}
+                href={`/firme/${firma.id}`}
+                style={styles.link}
+              >
+                <div style={styles.card} className="card">
                   <img
                     src={firma.image_url || "https://via.placeholder.com/400x200"}
                     style={styles.image}
@@ -123,7 +116,7 @@ export default function HomePage() {
                   <div style={styles.cardContent}>
                     <h3>{firma.nume}</h3>
                     <p style={styles.city}>📍 {firma.oras}</p>
-                    <p>{firma.descriere}</p>
+                    <p style={styles.desc}>{firma.descriere}</p>
 
                     <button style={styles.btn}>Vezi detalii</button>
                   </div>
@@ -133,45 +126,52 @@ export default function HomePage() {
           </div>
         )}
       </div>
+
+      {/* 🔥 HOVER EFFECT */}
+      <style>
+        {`
+        body {
+          background: #f6f7fb;
+        }
+
+        .card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+        }
+
+        button:hover {
+          opacity: 0.9;
+        }
+      `}
+      </style>
     </div>
   )
 }
 
-// 🔷 STYLES TIPATE CORECT
 const styles: Record<string, CSSProperties> = {
-  layout: {
+  page: {
     display: "flex",
     maxWidth: "1300px",
     margin: "0 auto",
-    padding: "20px",
-    gap: "20px",
+    padding: "30px 20px",
+    gap: "30px",
   },
 
   sidebar: {
-    width: "250px",
-    padding: "15px",
-    border: "1px solid #eee",
-    borderRadius: "10px",
-    height: "fit-content",
+    width: "260px",
+    padding: "20px",
+    borderRadius: "14px",
     background: "#fff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
   },
 
   input: {
     width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "6px",
+    padding: "12px",
+    marginBottom: "12px",
+    borderRadius: "8px",
     border: "1px solid #ddd",
-  },
-
-  applyBtn: {
-    width: "100%",
-    padding: "10px",
-    background: "#0070f3",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
+    fontSize: "14px",
   },
 
   content: {
@@ -179,58 +179,70 @@ const styles: Record<string, CSSProperties> = {
   },
 
   title: {
-    marginBottom: "20px",
+    marginBottom: "25px",
+    fontSize: "26px",
+    fontWeight: "600",
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-    gap: "20px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+    gap: "25px",
+  },
+
+  link: {
+    textDecoration: "none",
+    color: "inherit",
   },
 
   card: {
-    borderRadius: "12px",
+    borderRadius: "16px",
     overflow: "hidden",
-    border: "1px solid #eee",
     background: "#fff",
+    transition: "all 0.25s ease",
+    cursor: "pointer",
     position: "relative",
-    transition: "0.2s",
   },
 
   image: {
     width: "100%",
-    height: "170px",
+    height: "180px",
     objectFit: "cover",
   },
 
   cardContent: {
-    padding: "15px",
+    padding: "16px",
   },
 
   city: {
     fontSize: "13px",
-    color: "#666",
-    marginBottom: "10px",
+    color: "#777",
+    marginBottom: "6px",
+  },
+
+  desc: {
+    fontSize: "14px",
+    color: "#444",
   },
 
   badge: {
     position: "absolute",
-    top: "10px",
-    left: "10px",
-    background: "gold",
-    padding: "5px 8px",
-    borderRadius: "6px",
+    top: "12px",
+    left: "12px",
+    background: "linear-gradient(135deg, gold, orange)",
+    padding: "6px 10px",
+    borderRadius: "8px",
     fontSize: "12px",
     fontWeight: "bold",
   },
 
   btn: {
-    marginTop: "10px",
-    padding: "8px 12px",
+    marginTop: "12px",
+    padding: "10px 14px",
     background: "#0070f3",
     color: "#fff",
     border: "none",
-    borderRadius: "6px",
+    borderRadius: "8px",
     cursor: "pointer",
   },
 }
