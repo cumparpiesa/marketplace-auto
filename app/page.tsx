@@ -37,7 +37,6 @@ export default function Home() {
             <p>📍 {firma.oras}</p>
             <p>{firma.descriere}</p>
 
-            {/* 🔥 BUTON FIXAT */}
             <Link href={`/firma/${firma.id}`} style={styles.btn}>
               Vezi detalii
             </Link>
@@ -63,7 +62,7 @@ const styles = {
   grid: {
     display: "flex",
     gap: "20px",
-    flexWrap: "wrap",
+    flexWrap: "wrap" as const, // 🔥 IMPORTANT FIX
   },
 
   card: {
