@@ -1,5 +1,4 @@
-import { supabaseServer } from "@/lib/supabaseClientServer"
-
+import { supabaseServer } from "../../lib/supabaseServer"
 export default async function UserPage({
   params,
 }: {
