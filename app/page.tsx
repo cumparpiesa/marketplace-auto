@@ -1,8 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Link from "next/link"
 import { supabase } from "@/lib/supabaseClient"
+import Link from "next/link"
 
 export default function Home() {
   const [firme, setFirme] = useState<any[]>([])
@@ -10,8 +10,11 @@ export default function Home() {
   useEffect(() => {
     const fetchFirme = async () => {
       const { data, error } = await supabase
-        .from("firma")
+        .from("firme") // 🔥 CORECT
         .select("*")
+
+      console.log("DATA:", data)
+      console.log("ERROR:", error)
 
       if (data) setFirme(data)
     }
@@ -21,25 +24,31 @@ export default function Home() {
 
   return (
     <div style={styles.container}>
-      
+
       <h2 style={styles.section}>⭐ Firme recomandate</h2>
 
       <div style={styles.grid}>
         {firme.map((firma) => (
           <div key={firma.id} style={styles.card}>
-            
+
             <img
-              src={firma.image_url || "https://via.placeholder.com/300x150"}
+              src={firma.image_url || "https://via.placeholder.com/400x200"}
               style={styles.image}
             />
 
-            <h3>{firma.nume}</h3>
-            <p>📍 {firma.oras}</p>
-            <p>{firma.descriere}</p>
+            <div style={styles.content}>
+              <h3 style={styles.title}>{firma.nume}</h3>
 
-            <Link href={`/firma/${firma.id}`} style={styles.btn}>
-              Vezi detalii
-            </Link>
+              <p style={styles.city}>📍 {firma.oras}</p>
+
+              <p style={styles.desc}>{firma.descriere}</p>
+
+              <Link href={`/firme/${firma.id}`}>
+                <button style={styles.button}>
+                  Vezi detalii →
+                </button>
+              </Link>
+            </div>
 
           </div>
         ))}
@@ -53,41 +62,49 @@ const styles = {
   container: {
     padding: "20px",
   },
-
   section: {
     fontSize: "22px",
     marginBottom: "20px",
   },
-
   grid: {
-    display: "flex",
+    display: "flex" as const,
     gap: "20px",
-    flexWrap: "wrap" as const, // 🔥 IMPORTANT FIX
+    flexWrap: "wrap" as const,
   },
-
   card: {
-    width: "250px",
-    background: "#fff",
-    padding: "15px",
+    width: "280px",
     borderRadius: "10px",
-    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+    overflow: "hidden",
+    background: "#fff",
+    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
   },
-
   image: {
     width: "100%",
-    height: "150px",
+    height: "160px",
     objectFit: "cover" as const,
-    borderRadius: "8px",
-    marginBottom: "10px",
   },
-
-  btn: {
-    display: "inline-block",
+  content: {
+    padding: "10px",
+  },
+  title: {
+    fontSize: "16px",
+    fontWeight: "bold",
+  },
+  city: {
+    fontSize: "13px",
+    color: "#777",
+  },
+  desc: {
+    fontSize: "13px",
+    marginTop: "5px",
+  },
+  button: {
     marginTop: "10px",
+    padding: "6px 10px",
     background: "#0070f3",
     color: "#fff",
-    padding: "8px 12px",
+    border: "none",
     borderRadius: "6px",
-    textDecoration: "none",
+    cursor: "pointer",
   },
 }
