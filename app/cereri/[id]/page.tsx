@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
-import { supabaseServer } from "../@/lib/supabaseClientServer"
+import { supabase } from "../../lib/supabaseClient"
 
 export default function CerereDetalii() {
   const { id } = useParams()

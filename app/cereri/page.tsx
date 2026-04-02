@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { supabaseServer } from "../@/lib/supabaseClientServer"
+import { supabase } from "../../lib/supabaseClient"
 
 export default async function CereriPage() {
   const { data: cereri } = await supabase

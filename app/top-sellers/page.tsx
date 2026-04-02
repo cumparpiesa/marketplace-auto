@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClientClient"
-
+import { supabase } from "../../lib/supabaseClient"
 export default function TopSellers() {
   const [users, setUsers] = useState<any[]>([]);
 

@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { supabaseServer } from "./lib/supabaseServer"
-
+import { supabase } from "../../lib/supabaseClient"
 export default function FirmePage() {
   const [firme, setFirme] = useState<any[]>([])
 
