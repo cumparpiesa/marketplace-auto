@@ -1,19 +1,17 @@
-import { NextResponse } from "next/server"
-import { supabaseServer } from "../../../lib/supabaseServer"
+import { NextResponse } from "next/server";
+import { supabase } from "@/lib/supabaseClient";
+
 export async function POST(req: Request) {
-  const supabase = supabaseServer()
-
-  const body = await req.json()
-
-  const { titlu, pret } = body
+  const body = await req.json();
 
   const { data, error } = await supabase
-    .from("anunturi")
-    .insert([{ titlu, pret }])
+    .from("ads")
+    .insert([body])
+    .select();
 
   if (error) {
-    return NextResponse.json({ error: error.message })
+    return NextResponse.json({ error }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ data });
 }
