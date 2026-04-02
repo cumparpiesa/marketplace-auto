@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { supabase } from "@/lib/supabaseClientClient"
+import { supabase } from "@/lib/supabaseClient"
 
 export default function AddOferta({ cerereId }: { cerereId: string }) {
   const [pret, setPret] = useState("")
