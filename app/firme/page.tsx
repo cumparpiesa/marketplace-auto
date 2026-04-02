@@ -10,53 +10,118 @@ export default function FirmePage() {
     const fetchFirme = async () => {
       const { data, error } = await supabase.from("firme").select("*")
 
-      if (error) console.error(error)
-      else setFirme(data || [])
+      if (error) {
+        console.error(error)
+      } else {
+        setFirme(data || [])
+      }
     }
 
     fetchFirme()
   }, [])
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1 style={{ marginBottom: 20 }}>Firme</h1>
+    <div style={styles.container}>
+      <h1 style={styles.heading}>Firme</h1>
 
       <div style={styles.grid}>
         {firme.map((firma) => (
           <div key={firma.id} style={styles.card}>
-            <h3>{firma.nume}</h3>
-            <p>{firma.descriere}</p>
+            
+            {/* imagine */}
+            <img
+              src={firma.image_url || "https://via.placeholder.com/400x200"}
+              style={styles.image}
+            />
 
-            <button style={styles.btn}>Vezi magazin</button>
+            {/* content */}
+            <div style={styles.content}>
+              <h3 style={styles.title}>
+                {firma.nume || "Magazin"}
+              </h3>
+
+              <p style={styles.location}>📍 {firma.oras}</p>
+
+              <p style={styles.desc}>{firma.descriere}</p>
+
+              <p style={styles.phone}>📞 {firma.telefon}</p>
+
+              <a href={`/firme/${firma.id}`} style={styles.btn}>
+                Vezi magazin
+              </a>
+            </div>
           </div>
         ))}
       </div>
 
-      {firme.length === 0 && <p>Nu există firme încă.</p>}
+      {firme.length === 0 && (
+        <p style={{ marginTop: 20 }}>Nu există firme încă.</p>
+      )}
     </div>
   )
 }
 
 const styles = {
+  container: {
+    padding: "20px",
+    background: "#f2f4f5",
+    minHeight: "100vh",
+  },
+
+  heading: {
+    marginBottom: "20px",
+  },
+
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
     gap: "20px",
   },
+
   card: {
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    padding: "15px",
+    borderRadius: "12px",
+    overflow: "hidden",
     background: "#fff",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+    boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+    transition: "0.2s",
   },
+
+  image: {
+    width: "100%",
+    height: "180px",
+    objectFit: "cover",
+  },
+
+  content: {
+    padding: "12px",
+  },
+
+  title: {
+    margin: "0 0 5px",
+  },
+
+  location: {
+    fontSize: "12px",
+    color: "#777",
+  },
+
+  desc: {
+    fontSize: "14px",
+    margin: "6px 0",
+  },
+
+  phone: {
+    fontSize: "13px",
+    marginTop: "5px",
+  },
+
   btn: {
+    display: "inline-block",
     marginTop: "10px",
-    background: "#0070f3",
+    background: "#002f34",
     color: "#fff",
-    border: "none",
     padding: "8px 12px",
     borderRadius: "6px",
-    cursor: "pointer",
+    textDecoration: "none",
   },
 }
