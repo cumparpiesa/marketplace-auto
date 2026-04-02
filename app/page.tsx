@@ -6,32 +6,54 @@ import { supabase } from "@/lib/supabaseClient"
 
 export default function HomePage() {
   const [firme, setFirme] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchFirme = async () => {
+      setLoading(true)
+
       const { data, error } = await supabase
         .from("firme")
         .select("*")
-        .order("plan", { ascending: false }) // 🔥 PRO sus
 
-      if (error) console.log(error)
-      else setFirme(data || [])
+      console.log("FIRME:", data)
+      console.log("ERROR:", error)
+
+      if (error) {
+        console.log("Eroare:", error)
+        setFirme([])
+      } else {
+        // 🔥 sort manual (PRO sus)
+        const sorted = (data || []).sort((a, b) => {
+          if (a.plan === "pro" && b.plan !== "pro") return -1
+          if (a.plan !== "pro" && b.plan === "pro") return 1
+          return 0
+        })
+
+        setFirme(sorted)
+      }
+
+      setLoading(false)
     }
 
     fetchFirme()
   }, [])
 
+  if (loading) {
+    return <p style={{ padding: 20 }}>Se încarcă...</p>
+  }
+
   return (
     <div style={{ padding: 20 }}>
 
-      {/* ⭐ TITLU */}
       <h2 style={styles.section}>⭐ Firme recomandate</h2>
 
-      {/* GRID */}
+      {firme.length === 0 && (
+        <p>Nu există firme încă</p>
+      )}
+
       <div style={styles.grid}>
         {firme.map((firma) => (
-          
-          // 🔥 TOT CARDUL CLICKABLE
           <Link
             key={firma.id}
             href={`/firme/${firma.id}`}
@@ -39,13 +61,11 @@ export default function HomePage() {
           >
             <div style={styles.card}>
 
-              {/* IMAGINE */}
               <img
                 src={firma.image_url || "https://via.placeholder.com/400x200"}
                 style={styles.image}
               />
 
-              {/* CONTINUT */}
               <div style={{ padding: 10 }}>
                 <h3>{firma.nume}</h3>
 
@@ -53,11 +73,11 @@ export default function HomePage() {
 
                 <p>{firma.descriere}</p>
 
-                {/* 🔥 BADGE PRO */}
                 {firma.plan === "pro" && (
                   <span style={styles.badge}>⭐ PRO</span>
                 )}
               </div>
+
             </div>
           </Link>
         ))}
@@ -88,7 +108,7 @@ const styles: any = {
   image: {
     width: "100%",
     height: "150px",
-    objectFit: "cover" as const,
+    objectFit: "cover",
   },
   oras: {
     fontSize: "12px",
