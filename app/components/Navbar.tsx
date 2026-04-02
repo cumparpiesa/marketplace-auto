@@ -59,3 +59,20 @@ export default function Navbar() {
     </div>
   )
 }
+const styles = {
+  nav: {
+    display: "flex",
+    justifyContent: "space-between",
+    padding: "10px 20px",
+    background: "#111",
+    color: "#fff",
+  },
+  left: {
+    display: "flex",
+    gap: "10px",
+  },
+  right: {
+    display: "flex",
+    gap: "10px",
+  },
+};
