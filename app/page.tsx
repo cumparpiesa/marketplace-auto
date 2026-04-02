@@ -10,17 +10,8 @@ export default function HomePage() {
 
   useEffect(() => {
     const fetchFirme = async () => {
-      const { data, error } = await supabase
-        .from("firme")
-        .select("*")
-
-      console.log("DATA:", data)
-      console.log("ERROR:", error)
-
-      if (!error) {
-        setFirme(data || [])
-      }
-
+      const { data } = await supabase.from("firme").select("*")
+      setFirme(data || [])
       setLoading(false)
     }
 
@@ -28,30 +19,28 @@ export default function HomePage() {
   }, [])
 
   if (loading) {
-    return <p style={{ padding: 20 }}>Se încarcă...</p>
+    return <p style={{ padding: 40 }}>Se încarcă...</p>
   }
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2 style={styles.title}>⭐ Firme</h2>
+    <div style={styles.container}>
+      <h1 style={styles.title}>⭐ Firme recomandate</h1>
 
       <div style={styles.grid}>
         {firme.map((firma) => (
-          <Link
-            key={firma.id}
-            href={`/firme/${firma.id}`}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
+          <Link key={firma.id} href={`/firme/${firma.id}`}>
             <div style={styles.card}>
               <img
                 src={firma.image_url || "https://via.placeholder.com/400x200"}
                 style={styles.image}
               />
 
-              <div style={{ padding: 10 }}>
-                <h3>{firma.nume}</h3>
+              <div style={styles.content}>
+                <h3 style={styles.name}>{firma.nume}</h3>
                 <p style={styles.city}>📍 {firma.oras}</p>
-                <p>{firma.descriere}</p>
+                <p style={styles.desc}>{firma.descriere}</p>
+
+                <button style={styles.button}>Vezi detalii</button>
               </div>
             </div>
           </Link>
@@ -62,29 +51,64 @@ export default function HomePage() {
 }
 
 const styles = {
+  container: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "30px",
+  },
+
   title: {
-    fontSize: "22px",
+    fontSize: "26px",
     marginBottom: "20px",
   },
+
   grid: {
-    display: "flex",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
     gap: "20px",
-    flexWrap: "wrap" as const,
   },
+
   card: {
-    width: "280px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
+    borderRadius: "12px",
     overflow: "hidden",
+    border: "1px solid #eee",
     background: "#fff",
+    cursor: "pointer",
+    transition: "0.2s",
   },
+
   image: {
     width: "100%",
-    height: "150px",
+    height: "170px",
     objectFit: "cover" as const,
   },
+
+  content: {
+    padding: "15px",
+  },
+
+  name: {
+    fontSize: "18px",
+    marginBottom: "5px",
+  },
+
   city: {
-    fontSize: "12px",
-    color: "gray",
+    fontSize: "13px",
+    color: "#666",
+    marginBottom: "10px",
+  },
+
+  desc: {
+    fontSize: "14px",
+    marginBottom: "10px",
+  },
+
+  button: {
+    padding: "8px 12px",
+    background: "#0070f3",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
   },
 }
