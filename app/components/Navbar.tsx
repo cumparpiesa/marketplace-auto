@@ -85,4 +85,41 @@ const styles = {
     color: "#fff",
     textDecoration: "none",
   },
-};
+
+  // 🔥 ADAUGĂ ASTEA:
+  addBtn: {
+    background: "#0070f3",
+    color: "#fff",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontSize: "14px",
+  },
+  proBtn: {
+    background: "gold",
+    color: "#000",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontWeight: "bold",
+  },
+  email: {
+    fontSize: "12px",
+    opacity: 0.8,
+  },
+  proBadge: {
+    background: "green",
+    color: "#fff",
+    padding: "2px 6px",
+    borderRadius: "4px",
+    fontSize: "10px",
+  },
+  logout: {
+    background: "red",
+    color: "#fff",
+    border: "none",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+}
