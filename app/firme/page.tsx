@@ -14,6 +14,7 @@ export default function FirmePage() {
 
       if (error) console.error(error)
       else setFirme(data || [])
+console.log(firme)
     }
 
     fetchFirme()

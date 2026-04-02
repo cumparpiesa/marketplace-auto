@@ -1,95 +1,87 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { supabase } from "../lib/supabaseClient"
-export default function FirmePage() {
+import { supabase } from "@/lib/supabaseClient"
+
+export default function Home() {
   const [firme, setFirme] = useState<any[]>([])
 
   useEffect(() => {
-    fetchFirme()
+    const fetchData = async () => {
+      const { data, error } = await supabase
+        .from("firme")
+        .select("*")
+
+      if (error) console.error(error)
+      else setFirme(data || [])
+    }
+
+    fetchData()
   }, [])
 
-  const fetchFirme = async () => {
-    const { data } = await supabase
-      .from("firme")
-      .select("*")
-      .order("is_pro", { ascending: false })
-
-    setFirme(data || [])
-  }
-
-  const promoveaza = async () => {
-    const res = await fetch("/api/create-checkout", {
-      method: "POST",
-    })
-
-    const data = await res.json()
-
-    if (data.url) {
-      window.location.href = data.url
-    }
-  }
-
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Firme</h1>
+    <div style={styles.container}>
+      
+      <h1 style={styles.title}>Firme recomandate</h1>
 
-      {firme.map((firma) => (
-        <div key={firma.id} style={styles.card}>
-          {firma.image_url && (
-            <img src={firma.image_url} style={styles.image} />
-          )}
+      <div style={styles.grid}>
+        {firme.map((firma) => (
+          <div key={firma.id} style={styles.card}>
+            
+            <img
+              src={firma.image_url || "https://via.placeholder.com/400x200"}
+              style={styles.image}
+            />
 
-          {firma.is_pro && (
-            <div style={styles.proBadge}>⭐ PROMOVAT</div>
-          )}
+            <div style={styles.content}>
+              <h2>{firma.nume}</h2>
+              <p>{firma.oras}</p>
+              <p>{firma.descriere}</p>
 
-          <h2>{firma.nume}</h2>
-          <p>{firma.oras}</p>
-          <p>{firma.telefon}</p>
-          <p>{firma.descriere}</p>
+              {firma.plan === "pro" && (
+                <span style={styles.badge}>PRO</span>
+              )}
+            </div>
 
-          {!firma.is_pro && (
-            <button style={styles.button} onClick={promoveaza}>
-              🚀 Promovează (300 lei)
-            </button>
-          )}
-        </div>
-      ))}
+          </div>
+        ))}
+      </div>
+
     </div>
   )
 }
 
-const styles: any = {
+const styles = {
+  container: {
+    padding: "20px",
+  },
+  title: {
+    marginBottom: "20px",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "20px",
+  },
   card: {
     border: "1px solid #ddd",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 20,
-    position: "relative",
+    borderRadius: "10px",
+    overflow: "hidden",
+    background: "#fff",
   },
   image: {
     width: "100%",
-    height: 200,
-    objectFit: "cover",
-    borderRadius: 10,
+    height: "200px",
+    objectFit: "cover" as const,
   },
-  proBadge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
+  content: {
+    padding: "10px",
+  },
+  badge: {
     background: "gold",
-    padding: "5px 10px",
-    borderRadius: 5,
+    padding: "4px 8px",
+    borderRadius: "5px",
+    fontSize: "12px",
     fontWeight: "bold",
-  },
-  button: {
-    marginTop: 10,
-    padding: "10px 15px",
-    background: "green",
-    color: "#fff",
-    border: "none",
-    borderRadius: 5,
-    cursor: "pointer",
   },
 }
