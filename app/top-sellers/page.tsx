@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient"export default function TopSellers() {
+import { supabase } from "@/lib/supabaseClient";
+
+export default function TopSellers() {
   const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
@@ -10,26 +12,18 @@ import { supabase } from "@/lib/supabaseClient"export default function TopSeller
 
   async function load() {
     const { data } = await supabase
-      .from("top_sellers")
-      .select("*");
+      .from("profiles")
+      .select("*")
+      .limit(10);
 
     setUsers(data || []);
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>🏆 Top Sellers</h1>
-
+    <div style={{ padding: 40 }}>
+      <h1>Top sellers</h1>
       {users.map((u) => (
-        <div key={u.user_id} style={{
-          border: "1px solid #ddd",
-          padding: "12px",
-          marginBottom: "10px",
-          borderRadius: "10px"
-        }}>
-          <p>⭐ {u.avg_rating.toFixed(2)}</p>
-          <p>Reviews: {u.total_reviews}</p>
-        </div>
+        <p key={u.id}>{u.name}</p>
       ))}
     </div>
   );
