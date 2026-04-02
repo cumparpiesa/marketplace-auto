@@ -12,6 +12,7 @@ export default function HomePage() {
   const [search, setSearch] = useState("")
   const [oras, setOras] = useState("")
   const [plan, setPlan] = useState("")
+  const [sort, setSort] = useState("new")
 
   const fetchFirme = async () => {
     setLoading(true)
@@ -25,22 +26,31 @@ export default function HomePage() {
       )
     }
 
-    // 📍 FILTRU ORAȘ
+    // 📍 ORAȘ
     if (oras) {
       query = query.ilike("oras", `%${oras}%`)
     }
 
-    // ⭐ FILTRU PLAN
+    // ⭐ PLAN
     if (plan) {
       query = query.eq("plan", plan)
     }
 
+    // 🔽 SORTARE
+    if (sort === "new") {
+      query = query.order("created_at", { ascending: false })
+    } else if (sort === "old") {
+      query = query.order("created_at", { ascending: true })
+    } else if (sort === "az") {
+      query = query.order("nume", { ascending: true })
+    }
+
     const { data, error } = await query
 
-    console.log("FIRME:", data)
-    console.log("ERROR:", error)
+    console.log(data, error)
 
     if (!error) {
+      // 🔥 PRO sus mereu
       const sorted = (data || []).sort((a, b) => {
         if (a.plan === "pro" && b.plan !== "pro") return -1
         if (a.plan !== "pro" && b.plan === "pro") return 1
@@ -62,11 +72,10 @@ export default function HomePage() {
   return (
     <div style={{ padding: 20 }}>
 
-      {/* 🔥 FILTRE */}
+      {/* 🔥 FILTRE BAR */}
       <div style={styles.filters}>
 
         <input
-          type="text"
           placeholder="🔍 Caută firmă..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -74,25 +83,26 @@ export default function HomePage() {
         />
 
         <input
-          type="text"
           placeholder="📍 Oraș"
           value={oras}
           onChange={(e) => setOras(e.target.value)}
           style={styles.input}
         />
 
-        <select
-          value={plan}
-          onChange={(e) => setPlan(e.target.value)}
-          style={styles.select}
-        >
+        <select value={plan} onChange={(e) => setPlan(e.target.value)} style={styles.select}>
           <option value="">Toate</option>
           <option value="pro">PRO</option>
           <option value="free">FREE</option>
         </select>
 
+        <select value={sort} onChange={(e) => setSort(e.target.value)} style={styles.select}>
+          <option value="new">Cele mai noi</option>
+          <option value="old">Cele mai vechi</option>
+          <option value="az">A-Z</option>
+        </select>
+
         <button onClick={fetchFirme} style={styles.button}>
-          Aplică filtre
+          Aplică
         </button>
 
       </div>
@@ -142,8 +152,11 @@ const styles: any = {
   filters: {
     display: "flex",
     gap: "10px",
-    marginBottom: "20px",
     flexWrap: "wrap",
+    marginBottom: "20px",
+    background: "#f5f5f5",
+    padding: "10px",
+    borderRadius: "10px",
   },
   input: {
     padding: "10px",
@@ -178,7 +191,6 @@ const styles: any = {
     borderRadius: "10px",
     overflow: "hidden",
     background: "#fff",
-    cursor: "pointer",
   },
   image: {
     width: "100%",
@@ -194,7 +206,7 @@ const styles: any = {
     padding: "4px 8px",
     borderRadius: "5px",
     fontSize: "12px",
-    display: "inline-block",
     marginTop: "5px",
+    display: "inline-block",
   },
 }
