@@ -97,11 +97,7 @@ export default function HomePage() {
         ) : (
           <div style={styles.grid}>
             {firme.map((firma) => (
-              <Link
-                key={firma.id}
-                href={`/firme/${firma.id}`}
-                style={styles.link}
-              >
+              <Link key={firma.id} href={`/firme/${firma.id}`} style={styles.link}>
                 <div style={styles.card} className="card">
                   <img
                     src={firma.image_url || "https://via.placeholder.com/400x200"}
@@ -114,7 +110,7 @@ export default function HomePage() {
                   )}
 
                   <div style={styles.cardContent}>
-                    <h3>{firma.nume}</h3>
+                    <h3 style={styles.cardTitle}>{firma.nume}</h3>
                     <p style={styles.city}>📍 {firma.oras}</p>
                     <p style={styles.desc}>{firma.descriere}</p>
 
@@ -127,16 +123,16 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* 🔥 HOVER EFFECT */}
+      {/* 🔥 GLOBAL STYLE */}
       <style>
         {`
         body {
-          background: #f6f7fb;
+          background: #f5f7fb;
         }
 
         .card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+          transform: translateY(-8px) scale(1.01);
+          box-shadow: 0 20px 40px rgba(0,0,0,0.12);
         }
 
         button:hover {
@@ -151,10 +147,10 @@ export default function HomePage() {
 const styles: Record<string, CSSProperties> = {
   page: {
     display: "flex",
-    maxWidth: "1300px",
+    maxWidth: "1200px",
     margin: "0 auto",
-    padding: "30px 20px",
-    gap: "30px",
+    padding: "40px 20px",
+    gap: "40px",
   },
 
   sidebar: {
@@ -162,7 +158,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "20px",
     borderRadius: "14px",
     background: "#fff",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.03)",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
   },
 
   input: {
@@ -180,14 +176,15 @@ const styles: Record<string, CSSProperties> = {
 
   title: {
     marginBottom: "25px",
-    fontSize: "26px",
+    fontSize: "28px",
     fontWeight: "600",
   },
 
   grid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-    gap: "25px",
+    gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
+    gap: "30px",
+    alignItems: "stretch",
   },
 
   link: {
@@ -199,19 +196,25 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "16px",
     overflow: "hidden",
     background: "#fff",
-    transition: "all 0.25s ease",
+    transition: "all 0.3s ease",
     cursor: "pointer",
     position: "relative",
+    boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
   },
 
   image: {
     width: "100%",
-    height: "180px",
+    height: "200px",
     objectFit: "cover",
   },
 
   cardContent: {
-    padding: "16px",
+    padding: "18px",
+  },
+
+  cardTitle: {
+    fontSize: "18px",
+    fontWeight: "600",
   },
 
   city: {
@@ -222,7 +225,9 @@ const styles: Record<string, CSSProperties> = {
 
   desc: {
     fontSize: "14px",
-    color: "#444",
+    color: "#555",
+    marginTop: "6px",
+    lineHeight: "1.4",
   },
 
   badge: {
@@ -237,12 +242,14 @@ const styles: Record<string, CSSProperties> = {
   },
 
   btn: {
-    marginTop: "12px",
+    marginTop: "14px",
     padding: "10px 14px",
-    background: "#0070f3",
+    background: "linear-gradient(135deg, #0070f3, #0055cc)",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
     cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "500",
   },
 }
