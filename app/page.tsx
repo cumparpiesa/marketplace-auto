@@ -7,51 +7,70 @@ import { supabase } from "@/lib/supabaseClient"
 export default function HomePage() {
   const [firme, setFirme] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState("")
 
-  useEffect(() => {
-    const fetchFirme = async () => {
-      setLoading(true)
+  const fetchFirme = async (searchTerm = "") => {
+    setLoading(true)
 
-      const { data, error } = await supabase
-        .from("firme")
-        .select("*")
+    let query = supabase.from("firme").select("*")
 
-      console.log("FIRME:", data)
-      console.log("ERROR:", error)
-
-      if (error) {
-        console.log("Eroare:", error)
-        setFirme([])
-      } else {
-        // 🔥 sort manual (PRO sus)
-        const sorted = (data || []).sort((a, b) => {
-          if (a.plan === "pro" && b.plan !== "pro") return -1
-          if (a.plan !== "pro" && b.plan === "pro") return 1
-          return 0
-        })
-
-        setFirme(sorted)
-      }
-
-      setLoading(false)
+    // 🔥 SEARCH REAL
+    if (searchTerm) {
+      query = query.or(
+        `nume.ilike.%${searchTerm}%,descriere.ilike.%${searchTerm}%,oras.ilike.%${searchTerm}%`
+      )
     }
 
+    const { data, error } = await query
+
+    console.log("FIRME:", data)
+    console.log("ERROR:", error)
+
+    if (!error) {
+      // 🔥 PRO sus
+      const sorted = (data || []).sort((a, b) => {
+        if (a.plan === "pro" && b.plan !== "pro") return -1
+        if (a.plan !== "pro" && b.plan === "pro") return 1
+        return 0
+      })
+
+      setFirme(sorted)
+    } else {
+      setFirme([])
+    }
+
+    setLoading(false)
+  }
+
+  useEffect(() => {
     fetchFirme()
   }, [])
-
-  if (loading) {
-    return <p style={{ padding: 20 }}>Se încarcă...</p>
-  }
 
   return (
     <div style={{ padding: 20 }}>
 
+      {/* 🔍 SEARCH BAR */}
+      <div style={styles.searchBox}>
+        <input
+          type="text"
+          placeholder="Caută firmă, oraș, descriere..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={styles.input}
+        />
+
+        <button onClick={() => fetchFirme(search)} style={styles.button}>
+          Caută
+        </button>
+      </div>
+
+      {/* TITLU */}
       <h2 style={styles.section}>⭐ Firme recomandate</h2>
 
-      {firme.length === 0 && (
-        <p>Nu există firme încă</p>
-      )}
+      {loading && <p>Se încarcă...</p>}
+      {!loading && firme.length === 0 && <p>Nu s-au găsit rezultate</p>}
 
+      {/* GRID */}
       <div style={styles.grid}>
         {firme.map((firma) => (
           <Link
@@ -87,6 +106,25 @@ export default function HomePage() {
 }
 
 const styles: any = {
+  searchBox: {
+    display: "flex",
+    gap: "10px",
+    marginBottom: "20px",
+  },
+  input: {
+    flex: 1,
+    padding: "10px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+  },
+  button: {
+    background: "#0070f3",
+    color: "#fff",
+    border: "none",
+    padding: "10px 15px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
   section: {
     fontSize: "22px",
     marginBottom: "15px",
@@ -103,7 +141,6 @@ const styles: any = {
     overflow: "hidden",
     background: "#fff",
     cursor: "pointer",
-    transition: "0.3s",
   },
   image: {
     width: "100%",
