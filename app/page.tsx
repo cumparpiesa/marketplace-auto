@@ -1,10 +1,10 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
 import Link from "next/link"
+import { supabase } from "@/lib/supabaseClient"
 
-export default function Home() {
+export default function HomePage() {
   const [firme, setFirme] = useState<any[]>([])
 
   useEffect(() => {
@@ -12,208 +12,94 @@ export default function Home() {
       const { data, error } = await supabase
         .from("firme")
         .select("*")
+        .order("plan", { ascending: false }) // 🔥 PRO sus
 
-      console.log("DATA:", data)
-      console.log("ERROR:", error)
-
-      if (data) setFirme(data)
+      if (error) console.log(error)
+      else setFirme(data || [])
     }
 
     fetchFirme()
   }, [])
 
   return (
-    <div style={styles.container}>
+    <div style={{ padding: 20 }}>
 
-      {/* HERO */}
-      <div style={styles.hero}>
-        <h1 style={styles.heroTitle}>Găsește piese auto rapid 🔧</h1>
-
-        <div style={styles.searchBox}>
-          <input
-            placeholder="Caută piesă, firmă sau dezmembrare..."
-            style={styles.input}
-          />
-          <button style={styles.searchBtn}>Caută</button>
-        </div>
-      </div>
-
-      {/* CATEGORII */}
-      <div style={styles.categories}>
-        <div style={styles.cat}>🔧 Piese auto</div>
-        <div style={styles.cat}>🚗 Dezmembrări</div>
-        <div style={styles.cat}>🏢 Firme</div>
-        <div style={styles.cat}>📦 Cereri</div>
-      </div>
-
-      {/* FIRME */}
+      {/* ⭐ TITLU */}
       <h2 style={styles.section}>⭐ Firme recomandate</h2>
 
+      {/* GRID */}
       <div style={styles.grid}>
         {firme.map((firma) => (
-          <div
+          
+          // 🔥 TOT CARDUL CLICKABLE
+          <Link
             key={firma.id}
-            style={styles.card}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.03)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+            href={`/firme/${firma.id}`}
+            style={{ textDecoration: "none", color: "inherit" }}
           >
+            <div style={styles.card}>
 
-            {/* BADGE PRO */}
-            {firma.plan === "pro" && (
-              <span style={styles.badge}>PRO</span>
-            )}
+              {/* IMAGINE */}
+              <img
+                src={firma.image_url || "https://via.placeholder.com/400x200"}
+                style={styles.image}
+              />
 
-            <img
-              src={firma.image_url || "https://via.placeholder.com/400x200"}
-              style={styles.image}
-            />
+              {/* CONTINUT */}
+              <div style={{ padding: 10 }}>
+                <h3>{firma.nume}</h3>
 
-            <div style={styles.content}>
-              <h3 style={styles.title}>{firma.nume}</h3>
+                <p style={styles.oras}>📍 {firma.oras}</p>
 
-              <p style={styles.city}>📍 {firma.oras}</p>
+                <p>{firma.descriere}</p>
 
-              <p style={styles.desc}>{firma.descriere}</p>
-
-              <Link href={`/firme/${firma.id}`}>
-                <button style={styles.button}>
-                  Vezi detalii →
-                </button>
-              </Link>
+                {/* 🔥 BADGE PRO */}
+                {firma.plan === "pro" && (
+                  <span style={styles.badge}>⭐ PRO</span>
+                )}
+              </div>
             </div>
-
-          </div>
+          </Link>
         ))}
       </div>
-
     </div>
   )
 }
 
-const styles = {
-  container: {
-    fontFamily: "Arial",
-  },
-
-  hero: {
-    background: "#111",
-    color: "#fff",
-    padding: "40px 20px",
-    textAlign: "center" as const,
-  },
-
-  heroTitle: {
-    fontSize: "28px",
-    marginBottom: "20px",
-  },
-
-  searchBox: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "10px",
-  },
-
-  input: {
-    padding: "10px",
-    width: "300px",
-    borderRadius: "6px",
-    border: "none",
-  },
-
-  searchBtn: {
-    padding: "10px 15px",
-    background: "#0070f3",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
-
-  categories: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "15px",
-    padding: "20px",
-  },
-
-  cat: {
-    background: "#fff",
-    padding: "10px 15px",
-    borderRadius: "8px",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-    cursor: "pointer",
-  },
-
+const styles: any = {
   section: {
     fontSize: "22px",
-    padding: "0 20px",
-    marginBottom: "10px",
+    marginBottom: "15px",
   },
-
   grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+    display: "flex",
     gap: "20px",
-    padding: "20px",
+    flexWrap: "wrap",
   },
-
   card: {
-    position: "relative" as const,
-    background: "#fff",
+    width: "280px",
+    border: "1px solid #ddd",
     borderRadius: "10px",
     overflow: "hidden",
-    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-    transition: "0.2s",
+    background: "#fff",
     cursor: "pointer",
+    transition: "0.3s",
   },
-
-  badge: {
-    position: "absolute" as const,
-    top: "10px",
-    left: "10px",
-    background: "gold",
-    padding: "3px 6px",
-    borderRadius: "4px",
-    fontSize: "10px",
-    fontWeight: "bold",
-  },
-
   image: {
     width: "100%",
-    height: "160px",
+    height: "150px",
     objectFit: "cover" as const,
   },
-
-  content: {
-    padding: "10px",
+  oras: {
+    fontSize: "12px",
+    color: "gray",
   },
-
-  title: {
-    fontSize: "16px",
-    fontWeight: "bold",
-  },
-
-  city: {
-    fontSize: "13px",
-    color: "#777",
-  },
-
-  desc: {
-    fontSize: "13px",
+  badge: {
+    background: "gold",
+    padding: "4px 8px",
+    borderRadius: "5px",
+    fontSize: "12px",
+    display: "inline-block",
     marginTop: "5px",
-  },
-
-  button: {
-    marginTop: "10px",
-    padding: "6px 10px",
-    background: "#0070f3",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
   },
 }
