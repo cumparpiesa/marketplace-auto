@@ -3,9 +3,8 @@ export default function Footer() {
     <footer style={{
       background: "#0f172a",
       color: "white",
-      padding: "20px",
-      textAlign: "center",
-      marginTop: "40px"
+      padding: 20,
+      textAlign: "center"
     }}>
       © {new Date().getFullYear()} CumparPiesa.ro
     </footer>

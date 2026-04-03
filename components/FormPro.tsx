@@ -1,248 +1,40 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
-import { useRouter } from "next/navigation"
-import type { CSSProperties } from "react"
+import { useState } from "react";
 
-type Props = {
-  title: string
-  table: string
-}
-
-export default function FormPro({ title, table }: Props) {
-  const router = useRouter()
-
-  const [form, setForm] = useState({
+export default function FormPro({ title }: { title: string }) {
+  const [data, setData] = useState({
     titlu: "",
-    oras: "",
     descriere: "",
-    telefon: "",
-  })
-
-  const [searchOras, setSearchOras] = useState("")
-  const [showDropdown, setShowDropdown] = useState(false)
-  const [poza, setPoza] = useState<File | null>(null)
-  const [loading, setLoading] = useState(false)
-
-  const orase = [
-    "București","Cluj-Napoca","Timișoara","Iași","Brașov",
-    "Constanța","Craiova","Oradea","Sibiu","Arad",
-    "Satu Mare","Baia Mare","Pitești","Bacău","Suceava",
-    "Zalău","Huedin","Carei","Negrești-Oaș","Turda","Dej"
-  ]
-
-  const filtered = orase.filter(o =>
-    o.toLowerCase().includes(searchOras.toLowerCase())
-  )
-
-  const selectOras = (o: string) => {
-    setForm({ ...form, oras: o })
-    setSearchOras(o)
-    setShowDropdown(false)
-  }
-
-  const handleSubmit = async () => {
-    if (!form.titlu || !form.oras) {
-      return alert("Completează toate câmpurile")
-    }
-
-    setLoading(true)
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      alert("Login necesar")
-      router.push("/login")
-      return
-    }
-
-    let imageUrl = ""
-
-    // 🔥 upload poză
-    if (poza) {
-      const fileName = `${Date.now()}-${poza.name}`
-
-      const { error } = await supabase.storage
-        .from("poze")
-        .upload(fileName, poza)
-
-      if (error) {
-        alert(error.message)
-        setLoading(false)
-        return
-      }
-
-      const { data } = supabase.storage.from("poze").getPublicUrl(fileName)
-      imageUrl = data.publicUrl
-    }
-
-    // 🔥 INSERT FIXAT
-    const { error } = await supabase.from(table).insert([
-      {
-        titlu: form.titlu,
-        oras: form.oras,
-        descriere: form.descriere,
-        ...(table !== "cereri" && { telefon: form.telefon }), // ❌ fără telefon la cereri
-        ...(imageUrl && { imagine: imageUrl }), // doar dacă există
-        user_id: user.id,
-      },
-    ])
-
-    setLoading(false)
-
-    if (error) return alert(error.message)
-
-    alert("Salvat!")
-    router.push("/")
-  }
+    oras: "",
+    pret: ""
+  });
 
   return (
-    <div style={styles.page}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>{title}</h2>
+    <div style={{ maxWidth: 600, margin: "auto" }}>
+      <h1>{title}</h1>
 
-        {/* TITLU */}
-        <input
-          placeholder="Titlu"
-          onChange={(e) => setForm({ ...form, titlu: e.target.value })}
-          style={styles.input}
-        />
+      <input placeholder="Titlu"
+        onChange={e => setData({...data, titlu: e.target.value})} />
 
-        {/* ORAȘ AUTOCOMPLETE */}
-        <div style={{ position: "relative" }}>
-          <input
-            placeholder="Caută oraș / comună"
-            value={searchOras}
-            onFocus={() => setShowDropdown(true)}
-            onChange={(e) => {
-              setSearchOras(e.target.value)
-              setShowDropdown(true)
-            }}
-            style={styles.input}
-          />
+      <textarea placeholder="Descriere"
+        onChange={e => setData({...data, descriere: e.target.value})} />
 
-          {showDropdown && searchOras && (
-            <div style={styles.dropdown}>
-              {filtered.length === 0 && (
-                <div style={styles.option}>Nu există rezultate</div>
-              )}
+      <input placeholder="Oraș"
+        onChange={e => setData({...data, oras: e.target.value})} />
 
-              {filtered.map((o) => (
-                <div
-                  key={o}
-                  style={styles.option}
-                  onMouseDown={() => selectOras(o)}
-                >
-                  {o}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+      <input placeholder="Preț"
+        onChange={e => setData({...data, pret: e.target.value})} />
 
-        {/* TELEFON doar dacă NU e cerere */}
-        {table !== "cereri" && (
-          <input
-            placeholder="Telefon"
-            onChange={(e) => setForm({ ...form, telefon: e.target.value })}
-            style={styles.input}
-          />
-        )}
-
-        {/* DESCRIERE */}
-        <textarea
-          placeholder="Descriere"
-          onChange={(e) => setForm({ ...form, descriere: e.target.value })}
-          style={styles.textarea}
-        />
-
-        {/* POZĂ */}
-        <input
-          type="file"
-          onChange={(e) => setPoza(e.target.files?.[0] || null)}
-          style={styles.file}
-        />
-
-        {/* BUTTON */}
-        <button onClick={handleSubmit} style={styles.button}>
-          {loading ? "Se salvează..." : "Publică"}
-        </button>
-      </div>
+      <button style={{
+        marginTop: 10,
+        background: "#2563eb",
+        color: "white",
+        padding: 10,
+        borderRadius: 6
+      }}>
+        Trimite
+      </button>
     </div>
-  )
-}
-
-const styles: Record<string, CSSProperties> = {
-  page: {
-    display: "flex",
-    justifyContent: "center",
-    padding: "40px",
-  },
-
-  card: {
-    width: "500px",
-    padding: "25px",
-    borderRadius: "14px",
-    background: "#fff",
-    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-  },
-
-  title: {
-    marginBottom: "20px",
-    fontSize: "22px",
-    fontWeight: "600",
-  },
-
-  input: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-  },
-
-  textarea: {
-    width: "100%",
-    padding: "12px",
-    marginBottom: "12px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    minHeight: "100px",
-  },
-
-  file: {
-    marginBottom: "12px",
-  },
-
-  button: {
-    width: "100%",
-    padding: "12px",
-    background: "linear-gradient(135deg,#0070f3,#0055cc)",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-
-  dropdown: {
-    position: "absolute",
-    top: "45px",
-    left: 0,
-    width: "100%",
-    background: "#fff",
-    border: "1px solid #ddd",
-    borderRadius: "8px",
-    maxHeight: "180px",
-    overflowY: "auto",
-    zIndex: 999,
-  },
-
-  option: {
-    padding: "10px",
-    cursor: "pointer",
-  },
+  );
 }

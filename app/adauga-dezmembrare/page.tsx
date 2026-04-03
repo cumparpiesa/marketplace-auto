@@ -1,5 +1,5 @@
-import FormPro from "@/components/FormPro"
+import FormPro from "@/components/FormPro";
 
 export default function Page() {
-  return <FormPro title="Adaugă dezmembrare" table="dezmembari" />
+  return <FormPro title="Adaugă dezmembrare" />;
 }

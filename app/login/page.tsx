@@ -1,55 +1,22 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
 
-export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const router = useRouter()
-
-  const handleLogin = async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error) return alert(error.message)
-
-    router.push("/")
-  }
-
-  const handleRegister = async () => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-    })
-
-    if (error) return alert(error.message)
-
-    alert("Cont creat! Verifică emailul.")
-  }
+export default function Login() {
+  const [email, setEmail] = useState("");
 
   return (
-    <div style={{ maxWidth: 400, margin: "100px auto" }}>
-      <h2>Login / Register</h2>
+    <div style={{ maxWidth: 400, margin: "auto" }}>
+      <h1>Login</h1>
 
       <input
         placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-        style={{ width: "100%", marginBottom: 10 }}
+        onChange={e => setEmail(e.target.value)}
       />
 
-      <input
-        placeholder="Parolă"
-        type="password"
-        onChange={(e) => setPassword(e.target.value)}
-        style={{ width: "100%", marginBottom: 10 }}
-      />
-
-      <button onClick={handleLogin}>Login</button>
-      <button onClick={handleRegister}>Register</button>
+      <button style={{ marginTop: 10 }}>
+        Login
+      </button>
     </div>
-  )
+  );
 }
