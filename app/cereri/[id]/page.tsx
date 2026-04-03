@@ -1,41 +1,20 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
 import SendOffer from "@/app/components/SendOffer"
 
-export default function CerereDetaliu({ params }: { params: { id: string } }) {
-  const [cerere, setCerere] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+export default async function Page({
+  params,
+}: {
+  params: { id: string }
+}) {
+  const { data: cerere, error } = await supabase
+    .from("cereri")
+    .select("*")
+    .eq("id", params.id)
+    .single()
 
-  useEffect(() => {
-    if (params?.id) {
-      fetchData()
-    }
-  }, [params.id])
-
-  const fetchData = async () => {
-    setLoading(true)
-
-    const { data, error } = await supabase
-      .from("cereri")
-      .select("*")
-      .eq("id", params.id)
-      .single()
-
-    if (error) {
-      console.log("EROARE:", error)
-      setLoading(false)
-      return
-    }
-
-    setCerere(data)
-    setLoading(false)
+  if (error || !cerere) {
+    return <p>Cererea nu există</p>
   }
-
-  if (loading) return <p>Se încarcă...</p>
-
-  if (!cerere) return <p>Cererea nu există</p>
 
   return (
     <div style={styles.container}>
