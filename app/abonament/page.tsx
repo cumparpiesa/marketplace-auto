@@ -6,64 +6,154 @@ export default function AbonamentPage() {
   const [loading, setLoading] = useState(false)
 
   async function buy(plan: string) {
-    setLoading(true)
+    try {
+      setLoading(true)
 
-    const email = prompt("Introdu emailul contului tău") || ""
+      const email = prompt("Introdu emailul contului tău") || ""
 
-    const res = await fetch("/api/create-checkout", {
-      method: "POST",
-      body: JSON.stringify({ plan, email }),
-    })
+      const res = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ plan, email }),
+      })
 
-    const data = await res.json()
+      if (!res.ok) {
+        alert("Eroare server")
+        setLoading(false)
+        return
+      }
 
-    window.location.href = data.url
+      const data = await res.json()
+
+      if (!data.url) {
+        alert("Nu s-a primit link Stripe")
+        setLoading(false)
+        return
+      }
+
+      window.location.href = data.url
+    } catch (err) {
+      alert("Eroare conexiune")
+      setLoading(false)
+    }
   }
 
   return (
     <div style={{ padding: 40 }}>
-      <h1>Abonamente</h1>
+      <h1 style={{ fontSize: 32, marginBottom: 30 }}>Abonamente</h1>
 
-      <div style={{ display: "flex", gap: 20, marginTop: 30 }}>
+      <div style={{ display: "flex", gap: 20 }}>
+        
         {/* FREE */}
-        <div style={{ padding: 20, border: "1px solid #ccc" }}>
+        <div
+          style={{
+            padding: 20,
+            border: "1px solid #ccc",
+            borderRadius: 10,
+            width: 200,
+            textAlign: "center",
+            background: "#f5f5f5",
+          }}
+        >
           <h2>FREE</h2>
           <p>max 3 cereri</p>
-          <button disabled>Plan activ</button>
+
+          <button
+            style={{
+              marginTop: 10,
+              padding: "8px 16px",
+              background: "gray",
+              color: "white",
+              borderRadius: 6,
+              border: "none",
+            }}
+            disabled
+          >
+            Plan activ
+          </button>
         </div>
 
         {/* BUSINESS */}
-        <div style={{ padding: 20, border: "2px solid green" }}>
+        <div
+          style={{
+            padding: 20,
+            border: "2px solid green",
+            borderRadius: 10,
+            width: 200,
+            textAlign: "center",
+          }}
+        >
           <h2>BUSINESS</h2>
           <p>300 lei</p>
+
           <button
             onClick={() => buy("business")}
-            style={{ background: "gold", padding: 10 }}
+            disabled={loading}
+            style={{
+              marginTop: 10,
+              padding: "8px 16px",
+              background: "gold",
+              color: "black",
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}
           >
-            Activează
+            {loading ? "Se încarcă..." : "Activează"}
           </button>
         </div>
 
         {/* GOLD */}
-        <div style={{ padding: 20, border: "2px solid orange" }}>
+        <div
+          style={{
+            padding: 20,
+            border: "2px solid orange",
+            borderRadius: 10,
+            width: 200,
+            textAlign: "center",
+          }}
+        >
           <h2>GOLD</h2>
           <p>500 lei</p>
+
           <button
             onClick={() => buy("gold")}
-            style={{ background: "green", color: "white", padding: 10 }}
+            disabled={loading}
+            style={{
+              marginTop: 10,
+              padding: "8px 16px",
+              background: "green",
+              color: "white",
+              borderRadius: 6,
+              border: "none",
+              cursor: "pointer",
+            }}
           >
-            Activează
+            {loading ? "Se încarcă..." : "Activează"}
           </button>
         </div>
       </div>
 
-      <div style={{ marginTop: 40 }}>
+      {/* CREDIT */}
+      <div style={{ marginTop: 50 }}>
         <h2>Cumpără credite</h2>
+
         <button
           onClick={() => buy("credit")}
-          style={{ background: "green", color: "white", padding: 10 }}
+          disabled={loading}
+          style={{
+            marginTop: 10,
+            padding: "10px 20px",
+            background: "green",
+            color: "white",
+            borderRadius: 6,
+            border: "none",
+            cursor: "pointer",
+          }}
         >
-          100 credite - 50 lei
+          {loading ? "Se încarcă..." : "Cumpără 100 credite (50 lei)"}
         </button>
       </div>
     </div>
