@@ -25,7 +25,6 @@ export default function FormPro({ title, table }: Props) {
   const [poza, setPoza] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // 🔥 LISTĂ EXTINSĂ
   const orase = [
     "București","Cluj-Napoca","Timișoara","Iași","Brașov",
     "Constanța","Craiova","Oradea","Sibiu","Arad",
@@ -62,6 +61,7 @@ export default function FormPro({ title, table }: Props) {
 
     let imageUrl = ""
 
+    // 🔥 upload poză
     if (poza) {
       const fileName = `${Date.now()}-${poza.name}`
 
@@ -79,13 +79,17 @@ export default function FormPro({ title, table }: Props) {
       imageUrl = data.publicUrl
     }
 
+    // 🔥 INSERT FIXAT
     const { error } = await supabase.from(table).insert([
-  {
-    ...form,
-    ...(table !== "cereri" && { imagine: imageUrl }),
-    user_id: user.id,
-  },
-])
+      {
+        titlu: form.titlu,
+        oras: form.oras,
+        descriere: form.descriere,
+        ...(table !== "cereri" && { telefon: form.telefon }), // ❌ fără telefon la cereri
+        ...(imageUrl && { imagine: imageUrl }), // doar dacă există
+        user_id: user.id,
+      },
+    ])
 
     setLoading(false)
 
@@ -107,7 +111,7 @@ export default function FormPro({ title, table }: Props) {
           style={styles.input}
         />
 
-        {/* 🔥 AUTOCOMPLETE FIX */}
+        {/* ORAȘ AUTOCOMPLETE */}
         <div style={{ position: "relative" }}>
           <input
             placeholder="Caută oraș / comună"
@@ -139,7 +143,7 @@ export default function FormPro({ title, table }: Props) {
           )}
         </div>
 
-        {/* TELEFON (NU la cereri) */}
+        {/* TELEFON doar dacă NU e cerere */}
         {table !== "cereri" && (
           <input
             placeholder="Telefon"
