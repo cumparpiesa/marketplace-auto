@@ -1,58 +1,69 @@
 "use client"
 
 import { supabase } from "@/lib/supabaseClient"
+
 export default function AbonamentPage() {
-  const setPlan = async (plan: string) => {
-    const { data: userData } = await supabase.auth.getUser()
 
-    if (!userData.user) return alert("Nu ești logat")
+  const buyCredits = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    await supabase
-      .from("profiles")
-      .update({ plan })
-      .eq("id", userData.user.id)
+    if (!user) {
+      alert("Login necesar")
+      return
+    }
 
-    alert("Plan activat: " + plan)
-    window.location.reload()
+    const res = await fetch("/api/create-checkout", {
+      method: "POST",
+      body: JSON.stringify({
+        user_id: user.id,
+      }),
+    })
+
+    const data = await res.json()
+    window.location.href = data.url
   }
 
   return (
-    <div style={{ padding: 30 }}>
+    <div style={{ padding: 40 }}>
       <h1>Abonamente</h1>
 
       <div style={{ display: "flex", gap: 20 }}>
-        <div style={card}>
-          <h2>FREE</h2>
-          <p>✔ vezi cereri fără detalii</p>
-          <p>✔ max 3 cereri</p>
-          <button onClick={() => setPlan("free")}>Activează</button>
+
+        <div style={{ border: "1px solid #ddd", padding: 20 }}>
+          <h3>FREE</h3>
+          <p>max 3 cereri</p>
         </div>
 
-        <div style={{ ...card, border: "2px solid green" }}>
-          <h2>BUSINESS</h2>
-          <p>✔ 3000 anunțuri</p>
-          <p>✔ 1000 oferte gratuite</p>
-          <p>✔ vezi detalii</p>
-          <h3>300 lei + TVA</h3>
-          <button onClick={() => setPlan("business")}>Activează</button>
+        <div style={{ border: "1px solid green", padding: 20 }}>
+          <h3>BUSINESS</h3>
+          <p>300 lei</p>
         </div>
 
-        <div style={{ ...card, border: "2px solid gold" }}>
-          <h2>GOLD</h2>
-          <p>✔ 100000 anunțuri</p>
-          <p>✔ oferte nelimitate</p>
-          <p>✔ prioritate</p>
-          <h3>500 lei + TVA</h3>
-          <button onClick={() => setPlan("gold")}>Activează</button>
+        <div style={{ border: "1px solid gold", padding: 20 }}>
+          <h3>GOLD</h3>
+          <p>500 lei</p>
         </div>
+
       </div>
+
+      <hr style={{ margin: "30px 0" }} />
+
+      <h2>Cumpără credite</h2>
+
+      <button
+        onClick={buyCredits}
+        style={{
+          padding: 12,
+          background: "green",
+          color: "white",
+          borderRadius: 8,
+          marginTop: 10
+        }}
+      >
+        Cumpără 100 credite (50 lei)
+      </button>
     </div>
   )
-}
-
-const card = {
-  padding: 20,
-  borderRadius: 10,
-  background: "#f5f5f5",
-  width: 250,
 }

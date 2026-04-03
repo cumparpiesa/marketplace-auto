@@ -1,86 +1,85 @@
 "use client"
 
-import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function AddOferta({ cerereId }: { cerereId: string }) {
+  const router = useRouter()
   const [pret, setPret] = useState("")
-  const [mesaj, setMesaj] = useState("")
-  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
-    setLoading(true)
-
+  const handleSend = async () => {
     const {
       data: { user },
     } = await supabase.auth.getUser()
 
     if (!user) {
-      alert("Trebuie să fii logat")
-      setLoading(false)
+      alert("Login necesar")
       return
     }
 
-    const { error } = await supabase.from("oferte").insert([
+    // 🔥 profil
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("is_pro")
+      .eq("id", user.id)
+      .single()
+
+    // 🔥 dacă NU e PRO → verifică credite
+    if (!profile?.is_pro) {
+      const { data: credit } = await supabase
+        .from("credits")
+        .select("credits")
+        .eq("user_id", user.id)
+        .single()
+
+      if (!credit || credit.credits < 25) {
+        alert("Nu ai credite suficiente")
+        router.push("/abonament")
+        return
+      }
+
+      // 🔥 scade credite
+      await supabase
+        .from("credits")
+        .update({ credits: credit.credits - 25 })
+        .eq("user_id", user.id)
+
+      await supabase.from("credit_transactions").insert([
+        {
+          user_id: user.id,
+          amount: -25,
+          type: "use",
+        },
+      ])
+    }
+
+    // 🔥 salvează oferta
+    await supabase.from("oferte").insert([
       {
-        cerere_id: cerereId,
-        pret: Number(pret),
-        mesaj,
         user_id: user.id,
+        cerere_id: cerereId,
+        pret,
       },
     ])
 
-    if (error) {
-      alert("Eroare")
-      console.log(error)
-      setLoading(false)
-      return
-    }
-
     alert("Ofertă trimisă!")
-    setPret("")
-    setMesaj("")
-    setLoading(false)
+    router.push("/")
   }
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginTop: 30 }}>
-      <h3>Trimite ofertă</h3>
+    <div style={{ padding: 20 }}>
+      <h2>Trimite ofertă</h2>
 
       <input
-        placeholder="Preț (lei)"
+        placeholder="Preț"
         value={pret}
         onChange={(e) => setPret(e.target.value)}
-        required
-        style={input}
       />
 
-      <textarea
-        placeholder="Mesaj"
-        value={mesaj}
-        onChange={(e) => setMesaj(e.target.value)}
-        required
-        style={{ ...input, height: 80 }}
-      />
-
-      <button style={btn}>
-        {loading ? "Se trimite..." : "Trimite ofertă"}
+      <button onClick={handleSend}>
+        Trimite ofertă (25 credite dacă nu ești PRO)
       </button>
-    </form>
+    </div>
   )
-}
-
-const input = {
-  width: "100%",
-  padding: "10px",
-  marginBottom: "10px",
-}
-
-const btn = {
-  padding: "10px 20px",
-  background: "#16a34a",
-  color: "white",
-  border: "none",
-  cursor: "pointer",
 }
