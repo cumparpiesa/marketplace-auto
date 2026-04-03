@@ -1,27 +1,14 @@
 "use client"
 
-import { supabase } from "@/lib/supabaseClient"
-
 export default function AbonamentPage() {
-
-  const buyCredits = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      alert("Login necesar")
-      return
-    }
-
+  const buy = async (plan: string) => {
     const res = await fetch("/api/create-checkout", {
       method: "POST",
-      body: JSON.stringify({
-        user_id: user.id,
-      }),
+      body: JSON.stringify({ plan }),
     })
 
     const data = await res.json()
+
     window.location.href = data.url
   }
 
@@ -30,40 +17,32 @@ export default function AbonamentPage() {
       <h1>Abonamente</h1>
 
       <div style={{ display: "flex", gap: 20 }}>
-
-        <div style={{ border: "1px solid #ddd", padding: 20 }}>
-          <h3>FREE</h3>
+        
+        {/* FREE */}
+        <div style={{ border: "1px solid #ccc", padding: 20 }}>
+          <h2>FREE</h2>
           <p>max 3 cereri</p>
         </div>
 
-        <div style={{ border: "1px solid green", padding: 20 }}>
-          <h3>BUSINESS</h3>
+        {/* BUSINESS */}
+        <div style={{ border: "2px solid green", padding: 20 }}>
+          <h2>BUSINESS</h2>
           <p>300 lei</p>
+          <button onClick={() => buy("business")}>
+            Activează
+          </button>
         </div>
 
-        <div style={{ border: "1px solid gold", padding: 20 }}>
-          <h3>GOLD</h3>
+        {/* GOLD */}
+        <div style={{ border: "2px solid gold", padding: 20 }}>
+          <h2>GOLD</h2>
           <p>500 lei</p>
+          <button onClick={() => buy("gold")}>
+            Activează
+          </button>
         </div>
 
       </div>
-
-      <hr style={{ margin: "30px 0" }} />
-
-      <h2>Cumpără credite</h2>
-
-      <button
-        onClick={buyCredits}
-        style={{
-          padding: 12,
-          background: "green",
-          color: "white",
-          borderRadius: 8,
-          marginTop: 10
-        }}
-      >
-        Cumpără 100 credite (50 lei)
-      </button>
     </div>
   )
 }

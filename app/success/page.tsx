@@ -1,49 +1,29 @@
-"use client"
+import { createClient } from "@/lib/supabaseServer"
 
-import { useEffect } from "react"
-import { supabase } from "@/lib/supabaseClient"
-import { useRouter } from "next/navigation"
+export default async function Success({ searchParams }: any) {
+  const supabase = await createClient()
 
-export default function SuccessPage() {
-  const router = useRouter()
+  const plan = searchParams.plan
 
-  useEffect(() => {
-    const addCredits = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
 
-      if (!user) {
-        router.push("/login")
-        return
-      }
+  if (user) {
+    await supabase
+      .from("profiles")
+      .update({
+        is_pro: true,
+        plan: plan,
+        subscription: plan,
+      })
+      .eq("id", user.id)
+  }
 
-      const { data } = await supabase
-        .from("credits")
-        .select("*")
-        .eq("user_id", user.id)
-        .single()
-
-      if (!data) {
-        await supabase.from("credits").insert([
-          { user_id: user.id, credits: 100 },
-        ])
-      } else {
-        await supabase
-          .from("credits")
-          .update({
-            credits: data.credits + 100,
-          })
-          .eq("user_id", user.id)
-      }
-
-      alert("Ai primit 100 credite 🎉")
-
-      router.push("/cereri")
-    }
-
-    addCredits()
-  }, [])
-
-  return <h1>Se procesează plata...</h1>
+  return (
+    <div style={{ padding: 40 }}>
+      <h1>✅ Plata reușită</h1>
+      <p>Abonamentul tău este activ.</p>
+    </div>
+  )
 }
