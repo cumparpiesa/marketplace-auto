@@ -4,9 +4,14 @@ import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "CumparPiesa",
+  description: "Marketplace piese auto",
 };
 
-export default function RootLayout({ children }: any) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="ro">
       <body>
