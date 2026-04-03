@@ -2,9 +2,12 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
+
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const router = useRouter()
 
   const handleLogin = async () => {
     const { error } = await supabase.auth.signInWithPassword({
@@ -12,44 +15,41 @@ export default function LoginPage() {
       password,
     })
 
-    if (error) {
-      alert(error.message)
-    } else {
-      alert("Login reușit!")
-      window.location.href = "/"
-    }
+    if (error) return alert(error.message)
+
+    router.push("/")
+  }
+
+  const handleRegister = async () => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    })
+
+    if (error) return alert(error.message)
+
+    alert("Cont creat! Verifică emailul.")
   }
 
   return (
-    <div style={styles.container}>
-      <h1>Login</h1>
+    <div style={{ maxWidth: 400, margin: "100px auto" }}>
+      <h2>Login / Register</h2>
 
       <input
-        type="email"
         placeholder="Email"
-        value={email}
         onChange={(e) => setEmail(e.target.value)}
+        style={{ width: "100%", marginBottom: 10 }}
       />
 
       <input
-        type="password"
         placeholder="Parolă"
-        value={password}
+        type="password"
         onChange={(e) => setPassword(e.target.value)}
+        style={{ width: "100%", marginBottom: 10 }}
       />
 
       <button onClick={handleLogin}>Login</button>
+      <button onClick={handleRegister}>Register</button>
     </div>
   )
-}
-
-// 🔥 FIX FINAL pentru Vercel (fără erori TypeScript)
-const styles: any = {
-  container: {
-    maxWidth: 400,
-    margin: "40px auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: 10,
-  },
 }
