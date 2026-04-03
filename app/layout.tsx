@@ -10,56 +10,115 @@ export default function RootLayout({
     <html lang="ro">
       <body>
 
-        {/* NAVBAR */}
+        {/* NAVBAR ULTRA PRO */}
         <nav style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          background: "#111",
+          background: "#0f172a",
+          padding: "12px 20px",
           color: "white",
-          padding: "12px 20px"
+          position: "sticky",
+          top: 0,
+          zIndex: 1000
         }}>
-          <div style={{ display: "flex", gap: "20px" }}>
-            <b>CP</b>
-            <Link href="/" style={{ color: "white" }}>Home</Link>
-            <Link href="/catalog" style={{ color: "white" }}>Catalog piese</Link>
-            <Link href="/dezmembrari" style={{ color: "white" }}>Dezmembrări</Link>
-            <Link href="/cereri" style={{ color: "white" }}>Cereri</Link>
+
+          {/* LEFT */}
+          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+            <Link href="/" style={{
+              fontSize: "20px",
+              fontWeight: "bold",
+              color: "#3b82f6",
+              textDecoration: "none"
+            }}>
+              cumparpiesa.ro
+            </Link>
+
+            <Link href="/" style={link}>Home</Link>
+            <Link href="/catalog" style={link}>Catalog</Link>
+            <Link href="/dezmembrari" style={link}>Dezmembrări</Link>
+            <Link href="/cereri" style={link}>Cereri</Link>
+            <Link href="/firme" style={link}>Firme</Link>
           </div>
 
-          <div style={{ display: "flex", gap: "10px" }}>
+          {/* SEARCH */}
+          <div style={{ flex: 1, margin: "0 20px" }}>
+            <input
+              placeholder="Caută piese, firme..."
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                borderRadius: "8px",
+                border: "none"
+              }}
+            />
+          </div>
+
+          {/* RIGHT */}
+          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
             <Link href="/adauga-piesa">
-              <button>+ Piesă</button>
+              <button style={btn}>+ Piesă</button>
             </Link>
 
             <Link href="/adauga-dezmembrare">
-              <button>+ Dezmembrare</button>
+              <button style={btn}>+ Dezmembrare</button>
             </Link>
 
             <Link href="/adauga-cerere">
-              <button>+ Cerere</button>
+              <button style={btn}>+ Cerere</button>
             </Link>
 
             <Link href="/adauga-firma">
-              <button>+ Firmă</button>
+              <button style={btn}>+ Firmă</button>
             </Link>
 
             <Link href="/abonament">
-              <button style={{ background: "gold" }}>Abonament</button>
+              <button style={{
+                ...btn,
+                background: "gold",
+                color: "black",
+                fontWeight: "bold"
+              }}>
+                PRO
+              </button>
             </Link>
+
+            <div style={{
+              background: "#1e293b",
+              padding: "6px 10px",
+              borderRadius: "8px",
+              fontSize: "14px"
+            }}>
+              admin@autoalmani.ro
+            </div>
+
+            <button style={{
+              background: "#dc2626",
+              color: "white",
+              border: "none",
+              padding: "6px 10px",
+              borderRadius: "6px",
+              cursor: "pointer"
+            }}>
+              Logout
+            </button>
+
           </div>
+
         </nav>
 
-        {/* CONTENT */}
+        {/* PAGE CONTENT */}
         {children}
 
-        {/* FOOTER */}
+        {/* FOOTER BUSINESS */}
         <footer style={{
           background: "#f4f6f8",
           padding: "50px 20px",
           marginTop: "50px",
           borderTop: "1px solid #ddd"
         }}>
+
           <div style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr 1fr 1fr",
@@ -68,54 +127,93 @@ export default function RootLayout({
             margin: "0 auto"
           }}>
 
+            {/* BRAND */}
             <div>
               <h2 style={{ color: "#2563eb" }}>cumparpiesa.ro</h2>
               <p>Marketplace piese auto România</p>
-              <p style={{ fontSize: "14px", color: "#666" }}>
-                © 2026 <br />
+
+              <p style={{
+                fontSize: "14px",
+                color: "#666",
+                marginTop: "10px",
+                lineHeight: "1.6"
+              }}>
+                © 2026 cumparpiesa.ro <br />
                 Almani Roads Construct SRL <br />
                 CUI: RO36224947
               </p>
             </div>
 
+            {/* ASISTENTA */}
             <div>
               <h4>Asistență</h4>
               <p>Cum cumperi piese</p>
               <p>Cum vinzi piese</p>
               <p>Contul meu</p>
               <p>Plată și livrare</p>
+              <p>Garanție și retur</p>
             </div>
 
+            {/* INFORMATII */}
             <div>
               <h4>Informații</h4>
               <p>Termeni și condiții</p>
               <p>Politica cookies</p>
               <p>Confidențialitate</p>
+              <p>Protecția datelor</p>
               <p>Contact</p>
             </div>
 
+            {/* SIGURANTA */}
             <div>
               <h4>Siguranță</h4>
+
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Logo_ANPC.svg/512px-Logo_ANPC.svg.png"
-                style={{ width: "120px" }}
+                alt="ANPC"
+                style={{ width: "120px", marginBottom: "10px" }}
               />
-              <p>Protecția consumatorului</p>
+
+              <p style={{ fontSize: "14px" }}>
+                Protecția consumatorului
+              </p>
+
+              <p>Facebook</p>
             </div>
 
           </div>
 
+          {/* SEO */}
           <div style={{
             marginTop: "40px",
-            textAlign: "center",
             fontSize: "13px",
-            color: "#666"
+            color: "#666",
+            textAlign: "center",
+            maxWidth: "900px",
+            marginLeft: "auto",
+            marginRight: "auto"
           }}>
-            Marketplace piese auto • dezmembrări • motoare • România
+            Marketplace piese auto • dezmembrări auto • motoare • cutii viteze • piese second hand • România • cumpăr piese auto rapid
           </div>
+
         </footer>
 
       </body>
     </html>
   )
+}
+
+/* STYLE */
+const btn = {
+  background: "#2563eb",
+  color: "white",
+  border: "none",
+  padding: "6px 10px",
+  borderRadius: "6px",
+  cursor: "pointer"
+}
+
+const link = {
+  color: "white",
+  textDecoration: "none"
 }
