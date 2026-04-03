@@ -26,21 +26,19 @@ export async function POST(req: Request) {
   }
 
   if (event.type === "checkout.session.completed") {
-    const session: any = event.data.object
+    const session = event.data.object as any
 
-    const userId = session.metadata.user_id
+    const email = session.metadata.email
     const plan = session.metadata.plan
 
-    if (userId) {
-      await supabase
-        .from("profiles")
-        .update({
-          is_pro: true,
-          subscription: plan,
-          plan: plan,
-        })
-        .eq("id", userId)
-    }
+    // 🔥 UPDATE USER
+    await supabase
+      .from("profiles")
+      .update({
+        plan,
+        is_pro: true,
+      })
+      .eq("email", email)
   }
 
   return NextResponse.json({ received: true })
