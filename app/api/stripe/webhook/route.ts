@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
+import { createClient } from "@supabase/supabase-js"
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // 🔥 IMPORTANT
+)
 
 export async function POST(req: Request) {
   const body = await req.text()
@@ -19,11 +25,26 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook error" }, { status: 400 })
   }
 
-  // 🔥 aici poți trata plata (opțional)
+  // ✅ PLATA FINALIZATĂ
   if (event.type === "checkout.session.completed") {
-    const session = event.data.object as any
+    const session: any = event.data.object
 
-    console.log("Plată reușită pentru:", session.metadata.user_id)
+    const userId = session.metadata.user_id
+    const plan = session.metadata.plan
+
+    console.log("USER:", userId)
+    console.log("PLAN:", plan)
+
+    if (userId) {
+      await supabase
+        .from("profiles")
+        .update({
+          is_pro: true,
+          subscription: plan,
+          plan: plan,
+        })
+        .eq("id", userId)
+    }
   }
 
   return NextResponse.json({ received: true })

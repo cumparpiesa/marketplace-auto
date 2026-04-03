@@ -14,23 +14,27 @@ export async function POST(req: Request) {
   if (plan === "gold") price = 50000 // 500 lei
 
   const session = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    mode: "payment",
-    line_items: [
-      {
-        price_data: {
-          currency: "ron",
-          product_data: {
-            name: `Abonament ${plan.toUpperCase()}`,
-          },
-          unit_amount: price,
-        },
-        quantity: 1,
-      },
-    ],
-    success_url: `${process.env.NEXT_PUBLIC_URL}/success?plan=${plan}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_URL}/abonament`,
-  })
+  payment_method_types: ["card"],
+  mode: "payment",
 
-  return NextResponse.json({ url: session.url })
-}
+  metadata: {
+    user_id: user.id,
+    plan: plan,
+  },
+
+  line_items: [
+    {
+      price_data: {
+        currency: "ron",
+        product_data: {
+          name: `Abonament ${plan}`,
+        },
+        unit_amount: price,
+      },
+      quantity: 1,
+    },
+  ],
+
+  success_url: `${process.env.NEXT_PUBLIC_URL}/success`,
+  cancel_url: `${process.env.NEXT_PUBLIC_URL}/abonament`,
+})
