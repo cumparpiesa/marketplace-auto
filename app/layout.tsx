@@ -1,21 +1,19 @@
-import "./globals.css"
-import Navbar from "./components/Navbar"
+import "./globals.css";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 export const metadata = {
   title: "CumparPiesa",
-  description: "Marketplace piese auto România",
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: any) {
   return (
     <html lang="ro">
       <body>
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
-  )
+  );
 }

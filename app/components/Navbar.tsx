@@ -1,79 +1,115 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Navbar() {
-  const router = useRouter()
+  const router = useRouter();
+  const [search, setSearch] = useState("");
 
   const logout = () => {
-    localStorage.removeItem("user")
-    router.push("/")
-  }
+    localStorage.removeItem("user");
+    router.push("/login");
+  };
 
   return (
-    <div style={{
-      background: "#0f172a",
-      padding: "12px 20px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      color: "white"
-    }}>
-      
-      {/* LEFT */}
-      <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
-        <b style={{ color: "#3b82f6" }}>cumparpiesa.ro</b>
+    <nav style={styles.nav}>
+      {/* LOGO */}
+      <Link href="/" style={styles.logo}>
+        cumparpiesa.ro
+      </Link>
 
-        <a href="/">Home</a>
-        <a href="/catalog">Catalog</a>
-        <a href="/dezmembrari">Dezmembrări</a>
-        <a href="/cereri">Cereri</a>
-        <a href="/firme">Firme</a>
+      {/* MENIU */}
+      <div style={styles.links}>
+        <Link href="/">Home</Link>
+        <Link href="/catalog">Catalog</Link>
+        <Link href="/dezmembrari">Dezmembări</Link>
+        <Link href="/cereri">Cereri</Link>
+        <Link href="/firme">Firme</Link>
       </div>
 
-      {/* CENTER */}
+      {/* SEARCH */}
       <input
+        style={styles.search}
         placeholder="Caută piese, firme..."
-        style={{
-          padding: "8px 12px",
-          borderRadius: "8px",
-          border: "none",
-          width: "300px"
-        }}
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
-      {/* RIGHT */}
-      <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-        <a href="/adauga-piesa">+ Piesă</a>
-        <a href="/dezmembrari">+ Dezmembrare</a>
-        <a href="/cereri">+ Cerere</a>
-        <a href="/firma">+ Firmă</a>
+      {/* ACTIONS */}
+      <div style={styles.actions}>
+        <Link href="/adauga-piesa" style={styles.btn}>+ Piesă</Link>
+        <Link href="/adauga-dezmembrare" style={styles.btn}>+ Dezmembrare</Link>
+        <Link href="/adauga-cerere" style={styles.btn}>+ Cerere</Link>
+        <Link href="/adauga-firma" style={styles.btn}>+ Firmă</Link>
 
-        <a href="/abonament" style={{
-          background: "gold",
-          color: "black",
-          padding: "6px 10px",
-          borderRadius: "6px"
-        }}>
+        <Link href="/abonament" style={styles.abonament}>
           Abonament
-        </a>
+        </Link>
 
-        <span>admin@autoalmani.ro</span>
-
-        <button
-          onClick={logout}
-          style={{
-            background: "red",
-            color: "white",
-            border: "none",
-            padding: "6px 10px",
-            borderRadius: "6px",
-            cursor: "pointer"
-          }}
-        >
+        <button onClick={logout} style={styles.logout}>
           Logout
         </button>
       </div>
-    </div>
-  )
+    </nav>
+  );
 }
+
+const styles = {
+  nav: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "12px 20px",
+    background: "#0f172a",
+    color: "white",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+  logo: {
+    fontWeight: "bold",
+    fontSize: "18px",
+    color: "#3b82f6",
+    textDecoration: "none",
+  },
+  links: {
+    display: "flex",
+    gap: "15px",
+  },
+  search: {
+    padding: "8px",
+    borderRadius: "8px",
+    border: "none",
+    width: "220px",
+  },
+  actions: {
+    display: "flex",
+    gap: "8px",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  btn: {
+    background: "#2563eb",
+    color: "white",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    textDecoration: "none",
+  },
+  abonament: {
+    background: "#facc15",
+    color: "black",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontWeight: "bold",
+  },
+  logout: {
+    background: "red",
+    color: "white",
+    border: "none",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+};
