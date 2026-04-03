@@ -1,92 +1,90 @@
-import "./globals.css"
+<footer style={{
+  background: "#f4f6f8",
+  padding: "50px 20px",
+  marginTop: "50px",
+  borderTop: "1px solid #ddd"
+}}>
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  return (
-    <html lang="ro">
-      <body>
+  <div style={{
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr 1fr 1fr",
+    gap: "40px",
+    maxWidth: "1200px",
+    margin: "0 auto"
+  }}>
 
-        {/* CONTENT */}
-        {children}
+    {/* LOGO + FIRMA */}
+    <div>
+      <h2 style={{ color: "#2563eb" }}>cumparpiesa.ro</h2>
 
-        {/* FOOTER */}
-        <footer style={{
-          background: "#f4f6f8",
-          padding: "40px 20px",
-          marginTop: "50px",
-          borderTop: "1px solid #ddd"
-        }}>
-          
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
-            gap: "30px"
-          }}>
+      <p style={{ marginTop: "10px" }}>
+        Marketplace piese auto România
+      </p>
 
-            {/* LOGO + FIRMA */}
-            <div>
-              <h2 style={{ color: "#2563eb" }}>AutoAlmani</h2>
-              <p>Marketplace piese auto România</p>
-              <p style={{ fontSize: "14px", color: "#666" }}>
-                © 2026 AutoAlmani<br />
-                RO999777397<br />
-                J20/8014/2026
-              </p>
-            </div>
+      <p style={{
+        fontSize: "14px",
+        color: "#666",
+        marginTop: "10px",
+        lineHeight: "1.6"
+      }}>
+        © 2026 cumparpiesa.ro <br />
+        Almani Roads Construct SRL <br />
+        CUI: RO36224947
+      </p>
+    </div>
 
-            {/* AJUTOR */}
-            <div>
-              <h4>Asistență</h4>
-              <p>Cum cumperi</p>
-              <p>Cum vinzi</p>
-              <p>Contul meu</p>
-              <p>Plată și livrare</p>
-            </div>
+    {/* ASISTENTA */}
+    <div>
+      <h4>Asistență</h4>
 
-            {/* INFO */}
-            <div>
-              <h4>Informații</h4>
-              <p>Termeni și condiții</p>
-              <p>Politica cookies</p>
-              <p>Confidențialitate</p>
-              <p>Contact</p>
-            </div>
+      <p>Cum cumperi piese</p>
+      <p>Cum vinzi piese</p>
+      <p>Contul meu</p>
+      <p>Plată și livrare</p>
+      <p>Garanție și retur</p>
+    </div>
 
-            {/* ANPC + SOCIAL */}
-            <div>
-              <h4>Siguranță</h4>
+    {/* INFORMATII */}
+    <div>
+      <h4>Informații</h4>
 
-              <img
-                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Logo_ANPC.svg/512px-Logo_ANPC.svg.png"
-                alt="ANPC"
-                style={{ width: "120px", marginBottom: "10px" }}
-              />
+      <p>Termeni și condiții</p>
+      <p>Politica cookies</p>
+      <p>Confidențialitate</p>
+      <p>Protecția datelor</p>
+      <p>Contact</p>
+    </div>
 
-              <p style={{ fontSize: "14px" }}>
-                Protecția consumatorului
-              </p>
+    {/* SIGURANTA */}
+    <div>
+      <h4>Siguranță</h4>
 
-              <p>Facebook</p>
-            </div>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Logo_ANPC.svg/512px-Logo_ANPC.svg.png"
+        alt="ANPC"
+        style={{ width: "120px", marginBottom: "10px" }}
+      />
 
-          </div>
+      <p style={{ fontSize: "14px" }}>
+        Protecția consumatorului
+      </p>
 
-          {/* SEO TEXT */}
-          <div style={{
-            marginTop: "30px",
-            fontSize: "13px",
-            color: "#666",
-            textAlign: "center"
-          }}>
-            Marketplace piese auto • dezmembrări • motoare • cutii viteze • România
-          </div>
+      <p>Facebook</p>
+    </div>
 
-        </footer>
+  </div>
 
-      </body>
-    </html>
-  )
-}
+  {/* SEO TEXT */}
+  <div style={{
+    marginTop: "40px",
+    fontSize: "13px",
+    color: "#666",
+    textAlign: "center",
+    maxWidth: "900px",
+    marginLeft: "auto",
+    marginRight: "auto"
+  }}>
+    Marketplace piese auto • dezmembrări auto • motoare • cutii viteze • piese second hand • România • cumpăr piese auto rapid
+  </div>
+
+</footer>
