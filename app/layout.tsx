@@ -1,95 +1,92 @@
-import Navbar from "./components/Navbar"
+import "./globals.css"
 
-export default function RootLayout({ children }: any) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html>
+    <html lang="ro">
       <body>
-        <Navbar />
+
+        {/* CONTENT */}
         {children}
+
+        {/* FOOTER */}
+        <footer style={{
+          background: "#f4f6f8",
+          padding: "40px 20px",
+          marginTop: "50px",
+          borderTop: "1px solid #ddd"
+        }}>
+          
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gap: "30px"
+          }}>
+
+            {/* LOGO + FIRMA */}
+            <div>
+              <h2 style={{ color: "#2563eb" }}>AutoAlmani</h2>
+              <p>Marketplace piese auto România</p>
+              <p style={{ fontSize: "14px", color: "#666" }}>
+                © 2026 AutoAlmani<br />
+                RO999777397<br />
+                J20/8014/2026
+              </p>
+            </div>
+
+            {/* AJUTOR */}
+            <div>
+              <h4>Asistență</h4>
+              <p>Cum cumperi</p>
+              <p>Cum vinzi</p>
+              <p>Contul meu</p>
+              <p>Plată și livrare</p>
+            </div>
+
+            {/* INFO */}
+            <div>
+              <h4>Informații</h4>
+              <p>Termeni și condiții</p>
+              <p>Politica cookies</p>
+              <p>Confidențialitate</p>
+              <p>Contact</p>
+            </div>
+
+            {/* ANPC + SOCIAL */}
+            <div>
+              <h4>Siguranță</h4>
+
+              <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Logo_ANPC.svg/512px-Logo_ANPC.svg.png"
+                alt="ANPC"
+                style={{ width: "120px", marginBottom: "10px" }}
+              />
+
+              <p style={{ fontSize: "14px" }}>
+                Protecția consumatorului
+              </p>
+
+              <p>Facebook</p>
+            </div>
+
+          </div>
+
+          {/* SEO TEXT */}
+          <div style={{
+            marginTop: "30px",
+            fontSize: "13px",
+            color: "#666",
+            textAlign: "center"
+          }}>
+            Marketplace piese auto • dezmembrări • motoare • cutii viteze • România
+          </div>
+
+        </footer>
+
       </body>
     </html>
-  )
-}
-import Link from "next/link"
-
-export default function Footer() {
-  return (
-    <footer style={{ background: "#f4f6f8", marginTop: 60, padding: "40px 20px" }}>
-      
-      <div style={{
-        maxWidth: 1200,
-        margin: "0 auto",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr 1fr 1fr",
-        gap: 30
-      }}>
-        
-        {/* LOGO + INFO */}
-        <div>
-          <h2 style={{ color: "#2563eb" }}>AutoMarket</h2>
-          <p style={{ fontSize: 14, marginTop: 10 }}>
-            Marketplace piese auto din România
-          </p>
-
-          <p style={{ fontSize: 12, marginTop: 10 }}>
-            © 2026 AutoMarket SRL
-          </p>
-        </div>
-
-        {/* ASISTENTA */}
-        <div>
-          <h3>Asistență clienți</h3>
-          <ul style={{ marginTop: 10, fontSize: 14 }}>
-            <li><Link href="#">Despre noi</Link></li>
-            <li><Link href="#">Cum funcționează</Link></li>
-            <li><Link href="#">Cum vinzi</Link></li>
-            <li><Link href="#">Cum cumperi</Link></li>
-            <li><Link href="#">Garanție & retur</Link></li>
-          </ul>
-        </div>
-
-        {/* INFORMATII */}
-        <div>
-          <h3>Informații</h3>
-          <ul style={{ marginTop: 10, fontSize: 14 }}>
-            <li><Link href="#">Termeni și condiții</Link></li>
-            <li><Link href="#">Politica de cookie</Link></li>
-            <li><Link href="#">Confidențialitate</Link></li>
-            <li><Link href="#">Protecția consumatorului</Link></li>
-            <li><Link href="#">Contact</Link></li>
-          </ul>
-        </div>
-
-        {/* SOCIAL */}
-        <div>
-          <h3>Urmărește-ne</h3>
-          <p style={{ marginTop: 10 }}>
-            Facebook
-          </p>
-
-          <p style={{ fontSize: 14 }}>
-            fb.com/automarket
-          </p>
-
-          <div style={{ marginTop: 20 }}>
-            <p>Aplicația mobilă</p>
-            <p style={{ fontSize: 12 }}>Google Play / App Store</p>
-          </div>
-        </div>
-
-      </div>
-
-      {/* BOTTOM */}
-      <div style={{
-        borderTop: "1px solid #ddd",
-        marginTop: 40,
-        paddingTop: 20,
-        textAlign: "center",
-        fontSize: 12,
-        color: "#666"
-      }}>
-        Marketplace piese auto • România 🇷🇴
-      </div>
-    </footer>
   )
 }
