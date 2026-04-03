@@ -1,74 +1,36 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
 import { supabase } from "@/lib/supabaseClient"
+import SendOffer from "@/app/components/SendOffer"
 
-export default function CerereDetalii() {
-  const { id } = useParams()
-
+export default function CerereDetaliu({ params }: any) {
   const [cerere, setCerere] = useState<any>(null)
-  const [plan, setPlan] = useState("free")
 
   useEffect(() => {
-    loadData()
+    fetchData()
   }, [])
 
-  const loadData = async () => {
-    // 🔥 cerere
-    const { data: c } = await supabase
+  const fetchData = async () => {
+    const { data } = await supabase
       .from("cereri")
-      .select(`
-        *,
-        categories(name),
-        judete(name),
-        orase(name)
-      `)
-      .eq("id", id)
+      .select("*")
+      .eq("id", params.id)
       .single()
 
-    setCerere(c)
-
-    // 🔥 user plan
-    const { data: userData } = await supabase.auth.getUser()
-
-    if (userData.user) {
-      const { data: p } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userData.user.id)
-        .single()
-
-      setPlan(p?.plan || "free")
-    }
+    setCerere(data)
   }
 
-  if (!cerere) return <p>Loading...</p>
+  if (!cerere) return <p>Se încarcă...</p>
 
   return (
-    <div style={{ padding: 30 }}>
-      <h1>{cerere.title}</h1>
+    <div style={{ maxWidth: 800, margin: "40px auto" }}>
+      <h1>{cerere.titlu}</h1>
+      <p>📍 {cerere.oras}</p>
+      <p>{cerere.descriere}</p>
 
-      {/* 🔒 FREE */}
-      {plan === "free" ? (
-        <div
-          style={{
-            background: "#fff3cd",
-            padding: 20,
-            borderRadius: 10,
-          }}
-        >
-          <p>🔒 Upgrade la BUSINESS pentru detalii</p>
-        </div>
-      ) : (
-        <>
-          <p>{cerere.description}</p>
-
-          <p>
-            {cerere.orase?.name}, {cerere.judete?.name}
-          </p>
-        </>
-      )}
+      {/* 🔥 OFERTE */}
+      <SendOffer cerereId={cerere.id} />
     </div>
   )
 }
