@@ -1,4 +1,4 @@
-import AbonamentClient from "@/components/AbonamentClient"
+import AbonamentClient from "../../components/AbonamentClient"
 
 export default function Page() {
   return (

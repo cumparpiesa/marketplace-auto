@@ -28,18 +28,16 @@ export default function AbonamentClient() {
   }
 
   return (
-    <div>
-      <button
-        onClick={handleCheckout}
-        style={{
-          background: "green",
-          color: "white",
-          padding: "12px",
-          borderRadius: "8px"
-        }}
-      >
-        {loading ? "Se încarcă..." : "Activează GOLD"}
-      </button>
-    </div>
+    <button
+      onClick={handleCheckout}
+      style={{
+        background: "green",
+        color: "white",
+        padding: "12px",
+        borderRadius: "8px"
+      }}
+    >
+      {loading ? "Se încarcă..." : "Activează GOLD"}
+    </button>
   )
 }
