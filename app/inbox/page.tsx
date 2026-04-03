@@ -1,40 +1,45 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { supabase } from "@/lib/supabaseClient"
 import Link from "next/link"
+import { supabase } from "@/lib/supabaseClient"
 
 export default function Inbox() {
-  const [conversatii, setConversatii] = useState<any[]>([])
+  const [conv, setConv] = useState<any[]>([])
 
   useEffect(() => {
-    fetchData()
+    load()
   }, [])
 
-  const fetchData = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
+  const load = async () => {
     const { data } = await supabase
       .from("conversatii")
       .select("*")
-      .or(`user1.eq.${user?.id},user2.eq.${user?.id}`)
+      .order("created_at", { ascending: false })
 
-    setConversatii(data || [])
+    setConv(data || [])
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: "40px auto" }}>
+    <div style={{ padding: 20 }}>
       <h1>Inbox</h1>
 
-      {conversatii.map((c) => (
-        <Link key={c.id} href={`/inbox/${c.id}`}>
-          <div style={{ padding: 15, borderBottom: "1px solid #eee" }}>
-            Conversație {c.id}
+      {conv.map((c) => (
+        <Link key={c.id} href={`/chat/${c.id}`}>
+          <div style={styles.card}>
+            Conversație #{c.id}
           </div>
         </Link>
       ))}
     </div>
   )
+}
+
+const styles = {
+  card: {
+    padding: 15,
+    border: "1px solid #eee",
+    marginBottom: 10,
+    cursor: "pointer",
+  },
 }
