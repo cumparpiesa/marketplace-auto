@@ -1,5 +1,4 @@
-import FormPro from "@/app/components/FormPro"
-
+import FormPro from "@/components/FormPro"
 export default function Page() {
   return <FormPro title="Adaugă piesă" table="piese" />
 }
