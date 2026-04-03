@@ -2,8 +2,10 @@
 
 import { useEffect } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
 
 export default function SuccessPage() {
+  const router = useRouter()
 
   useEffect(() => {
     const addCredits = async () => {
@@ -11,7 +13,10 @@ export default function SuccessPage() {
         data: { user },
       } = await supabase.auth.getUser()
 
-      if (!user) return
+      if (!user) {
+        router.push("/login")
+        return
+      }
 
       const { data } = await supabase
         .from("credits")
@@ -31,10 +36,14 @@ export default function SuccessPage() {
           })
           .eq("user_id", user.id)
       }
+
+      alert("Ai primit 100 credite 🎉")
+
+      router.push("/cereri")
     }
 
     addCredits()
   }, [])
 
-  return <h1>Plată reușită 🎉</h1>
+  return <h1>Se procesează plata...</h1>
 }
