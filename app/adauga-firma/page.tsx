@@ -2,165 +2,130 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
+import type { CSSProperties } from "react"
 
 export default function AdaugaFirma() {
+  const router = useRouter()
+
   const [form, setForm] = useState({
     nume: "",
     oras: "",
-    telefon: "",
     descriere: "",
+    telefon: "",
   })
 
-  const [file, setFile] = useState<File | null>(null)
+  const [poza, setPoza] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e: any) => {
-    setForm({ ...form, [e.target.name]: e.target.value })
-  }
-
   const handleSubmit = async () => {
-    if (!form.nume || !form.oras || !form.telefon) {
-      return alert("Completează toate câmpurile obligatorii")
+    if (!form.nume || !form.oras || !form.descriere) {
+      return alert("Completează toate câmpurile")
     }
 
     setLoading(true)
 
-    const { data: userData } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
 
-    if (!userData.user) {
-      setLoading(false)
-      return alert("Trebuie să fii logat")
+    if (!user) {
+      alert("Login necesar")
+      router.push("/login")
+      return
     }
 
-    let image_url = ""
+    let imageUrl = ""
 
-    // 🔥 upload imagine
-    if (file) {
-      const fileName = `${Date.now()}-${file.name}`
+    if (poza) {
+      const fileName = `${Date.now()}-${poza.name}`
 
-      const { error: uploadError } = await supabase.storage
-        .from("images")
-        .upload(fileName, file)
+      const { error } = await supabase.storage
+        .from("poze")
+        .upload(fileName, poza)
 
-      if (uploadError) {
+      if (error) {
+        alert(error.message)
         setLoading(false)
-        return alert(uploadError.message)
+        return
       }
 
-      const { data } = supabase.storage
-        .from("images")
-        .getPublicUrl(fileName)
-
-      image_url = data.publicUrl
+      const { data } = supabase.storage.from("poze").getPublicUrl(fileName)
+      imageUrl = data.publicUrl
     }
 
-    // 🔥 insert în DB
     const { error } = await supabase.from("firme").insert([
       {
         ...form,
-        image_url,
-        user_id: userData.user.id,
-        is_pro: false,
+        image_url: imageUrl,
+        plan: "free",
+        user_id: user.id,
       },
     ])
 
     setLoading(false)
 
-    if (error) {
-      alert(error.message)
-    } else {
-      alert("Firmă adăugată cu succes 🚀")
-      window.location.href = "/"
-    }
+    if (error) return alert(error.message)
+
+    alert("Firmă adăugată!")
+    router.push("/")
   }
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Adaugă firmă</h1>
+    <div style={styles.page}>
+      <div style={styles.card}>
+        <h2 style={styles.title}>Adaugă firmă</h2>
 
-      <input
-        name="nume"
-        placeholder="Nume firmă"
-        onChange={handleChange}
-        style={styles.input}
-      />
+        <input placeholder="Nume firmă"
+          onChange={(e)=>setForm({...form, nume:e.target.value})}
+          style={styles.input}
+        />
 
-      <input
-        name="oras"
-        placeholder="Oraș"
-        onChange={handleChange}
-        style={styles.input}
-      />
+        <input placeholder="Oraș"
+          onChange={(e)=>setForm({...form, oras:e.target.value})}
+          style={styles.input}
+        />
 
-      <input
-        name="telefon"
-        placeholder="Telefon"
-        onChange={handleChange}
-        style={styles.input}
-      />
+        <input placeholder="Telefon"
+          onChange={(e)=>setForm({...form, telefon:e.target.value})}
+          style={styles.input}
+        />
 
-      <textarea
-        name="descriere"
-        placeholder="Descriere firmă"
-        onChange={handleChange}
-        style={styles.textarea}
-      />
+        <textarea placeholder="Descriere"
+          onChange={(e)=>setForm({...form, descriere:e.target.value})}
+          style={styles.textarea}
+        />
 
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files?.[0] || null)}
-        style={styles.file}
-      />
+        <input type="file"
+          onChange={(e)=>setPoza(e.target.files?.[0] || null)}
+        />
 
-      {file && <p>📷 {file.name}</p>}
-
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        style={styles.button}
-      >
-        {loading ? "Se salvează..." : "Salvează firmă"}
-      </button>
+        <button onClick={handleSubmit} style={styles.button}>
+          {loading ? "Se salvează..." : "Publică firma"}
+        </button>
+      </div>
     </div>
   )
 }
 
-const styles: any = {
-  container: {
-    maxWidth: 500,
-    margin: "60px auto",
-    display: "flex",
-    flexDirection: "column",
-    gap: 15,
-    padding: 20,
-    border: "1px solid #ddd",
-    borderRadius: 10,
+const styles: Record<string, CSSProperties> = {
+  page: { display: "flex", justifyContent: "center", padding: "40px" },
+  card: {
+    width: "500px",
+    padding: "25px",
+    borderRadius: "14px",
     background: "#fff",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   },
-  title: {
-    textAlign: "center",
-  },
-  input: {
-    padding: 10,
-    borderRadius: 6,
-    border: "1px solid #ccc",
-  },
-  textarea: {
-    padding: 10,
-    borderRadius: 6,
-    border: "1px solid #ccc",
-    minHeight: 100,
-  },
-  file: {
-    padding: 5,
-  },
+  title: { marginBottom: "20px", fontSize: "22px" },
+  input: { width: "100%", padding: "12px", marginBottom: "12px", borderRadius: "8px", border: "1px solid #ddd" },
+  textarea: { width: "100%", padding: "12px", marginBottom: "12px", borderRadius: "8px", border: "1px solid #ddd" },
   button: {
-    padding: 12,
-    background: "#0070f3",
+    width: "100%",
+    padding: "12px",
+    background: "linear-gradient(135deg,#0070f3,#0055cc)",
     color: "#fff",
     border: "none",
-    borderRadius: 6,
-    cursor: "pointer",
-    fontWeight: "bold",
+    borderRadius: "8px",
   },
 }
