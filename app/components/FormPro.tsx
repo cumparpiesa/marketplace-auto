@@ -80,13 +80,12 @@ export default function FormPro({ title, table }: Props) {
     }
 
     const { error } = await supabase.from(table).insert([
-      {
-        ...form,
-        telefon: table === "cereri" ? null : form.telefon,
-        imagine: imageUrl,
-        user_id: user.id,
-      },
-    ])
+  {
+    ...form,
+    ...(table !== "cereri" && { imagine: imageUrl }),
+    user_id: user.id,
+  },
+])
 
     setLoading(false)
 
