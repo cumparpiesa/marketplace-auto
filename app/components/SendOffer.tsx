@@ -2,11 +2,14 @@
 
 import { useState } from "react"
 import { supabase } from "@/lib/supabaseClient"
+import { useRouter } from "next/navigation"
 
 export default function SendOffer({ cerereId }: { cerereId: string }) {
   const [mesaj, setMesaj] = useState("")
   const [pret, setPret] = useState("")
   const [loading, setLoading] = useState(false)
+
+  const router = useRouter()
 
   const handleSend = async () => {
     setLoading(true)
@@ -34,9 +37,41 @@ export default function SendOffer({ cerereId }: { cerereId: string }) {
       return
     }
 
-    const { error } = await supabase.from("oferte").insert([
+    // 🔥 verificăm dacă există deja conversație
+    let { data: conv } = await supabase
+      .from("conversatii")
+      .select("*")
+      .eq("cerere_id", cerereId)
+      .eq("user1", user.id)
+      .maybeSingle()
+
+    // 🔥 dacă NU există → creăm
+    if (!conv) {
+      const { data: newConv, error } = await supabase
+        .from("conversatii")
+        .insert([
+          {
+            cerere_id: cerereId,
+            user1: user.id,
+            user2: null, // se va completa ulterior
+          },
+        ])
+        .select()
+        .single()
+
+      if (error) {
+        alert(error.message)
+        setLoading(false)
+        return
+      }
+
+      conv = newConv
+    }
+
+    // 🔥 trimitem mesaj
+    const { error } = await supabase.from("mesaje").insert([
       {
-        cerere_id: cerereId,
+        conversatie_id: conv.id,
         sender_id: user.id,
         mesaj,
         pret: Number(pret),
@@ -48,8 +83,9 @@ export default function SendOffer({ cerereId }: { cerereId: string }) {
     if (error) return alert(error.message)
 
     alert("Ofertă trimisă!")
-    setMesaj("")
-    setPret("")
+
+    // 🔥 redirect direct în chat
+    router.push(`/inbox/${conv.id}`)
   }
 
   return (
