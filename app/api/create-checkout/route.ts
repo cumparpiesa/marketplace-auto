@@ -1,41 +1,35 @@
 import { NextResponse } from "next/server"
 import Stripe from "stripe"
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-06-20",
-})
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 export async function POST(req: Request) {
-  const { type, user_id } = await req.json()
-
-  let price = ""
-  let metadata: any = { user_id }
-
-  // 🔥 abonament
-  if (type === "pro") {
-    price = "price_PRO_ID"
-    metadata.type = "subscription"
-  }
-
-  // 🔥 credite
-  if (type === "credits") {
-    price = "price_CREDITS_ID"
-    metadata.type = "credits"
-    metadata.amount = 100
-  }
+  const body = await req.json()
 
   const session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     mode: "payment",
+
     line_items: [
       {
-        price,
+        price_data: {
+          currency: "ron",
+          product_data: {
+            name: "100 credite marketplace",
+          },
+          unit_amount: 5000,
+        },
         quantity: 1,
       },
     ],
-    success_url: `${process.env.NEXT_PUBLIC_URL}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_URL}`,
-    metadata,
+
+    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/success`,
+    cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL}/abonament`,
+
+    metadata: {
+      user_id: body.user_id,
+      type: "credits",
+    },
   })
 
   return NextResponse.json({ url: session.url })
