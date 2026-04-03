@@ -6,17 +6,24 @@ export default function Navbar() {
   return (
     <nav style={{
       background: "#0f172a",
-      padding: "10px 20px",
+      color: "white",
+      padding: "14px 24px",
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between",
-      color: "white"
+      justifyContent: "space-between"
     }}>
-      <div style={{ fontWeight: "bold" }}>
+      
+      {/* LOGO */}
+      <div style={{ fontWeight: "bold", fontSize: 20 }}>
         cumparpiese.ro
       </div>
 
-      <div style={{ display: "flex", gap: 20 }}>
+      {/* MENIU */}
+      <div style={{
+        display: "flex",
+        gap: "24px",
+        fontSize: 16
+      }}>
         <Link href="/">Home</Link>
         <Link href="/catalog">Catalog</Link>
         <Link href="/dezmembrari">Dezmembrări</Link>
@@ -24,9 +31,20 @@ export default function Navbar() {
         <Link href="/firme">Firme</Link>
       </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
+      {/* ACTIUNI */}
+      <div style={{
+        display: "flex",
+        gap: "12px",
+        alignItems: "center"
+      }}>
+        <Link href="/adauga-piesa">+ Piesă</Link>
+        <Link href="/adauga-dezmembrare">+ Dezmembrare</Link>
+        <Link href="/adauga-cerere">+ Cerere</Link>
+        <Link href="/adauga-firma">+ Firmă</Link>
+
         <Link href="/login">Login</Link>
       </div>
+
     </nav>
   );
 }

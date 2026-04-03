@@ -4,7 +4,6 @@ import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "CumparPiesa",
-  description: "Marketplace piese auto",
 };
 
 export default function RootLayout({
@@ -15,9 +14,15 @@ export default function RootLayout({
   return (
     <html lang="ro">
       <body>
+
         <Navbar />
-        {children}
+
+        <main style={{ minHeight: "80vh" }}>
+          {children}
+        </main>
+
         <Footer />
+
       </body>
     </html>
   );
