@@ -1,6 +1,6 @@
 "use client"
 
-import ChatBox from "@/app/components/ChatBox"
+import ChatBox from "@/components/ChatBox"
 
 export default function Page({ params }: any) {
   return (
