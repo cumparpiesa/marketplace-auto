@@ -8,13 +8,24 @@ import type { CSSProperties } from "react"
 export default function AdaugaDezmembrare() {
   const router = useRouter()
 
-  const [titlu, setTitlu] = useState("")
-  const [oras, setOras] = useState("")
-  const [descriere, setDescriere] = useState("")
+  const [form, setForm] = useState({
+    titlu: "",
+    oras: "",
+    descriere: "",
+  })
+
+  const [poza, setPoza] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
 
+  // 🔥 ORASE + COMUNE (poți extinde)
+  const orase = [
+    "București","Cluj-Napoca","Timișoara","Iași","Brașov",
+    "Constanța","Craiova","Oradea","Sibiu","Arad",
+    "Satu Mare","Baia Mare","Pitești","Bacău","Suceava"
+  ]
+
   const handleSubmit = async () => {
-    if (!titlu || !oras || !descriere) {
+    if (!form.titlu || !form.oras || !form.descriere) {
       return alert("Completează toate câmpurile")
     }
 
@@ -30,11 +41,30 @@ export default function AdaugaDezmembrare() {
       return
     }
 
+    let imageUrl = ""
+
+    // 🔥 UPLOAD POZĂ
+    if (poza) {
+      const fileName = `${Date.now()}-${poza.name}`
+
+      const { error } = await supabase.storage
+        .from("poze")
+        .upload(fileName, poza)
+
+      if (error) {
+        alert(error.message)
+        setLoading(false)
+        return
+      }
+
+      const { data } = supabase.storage.from("poze").getPublicUrl(fileName)
+      imageUrl = data.publicUrl
+    }
+
     const { error } = await supabase.from("dezmembari").insert([
       {
-        titlu,
-        oras,
-        descriere,
+        ...form,
+        imagine: imageUrl,
         user_id: user.id,
       },
     ])
@@ -54,20 +84,32 @@ export default function AdaugaDezmembrare() {
 
         <input
           placeholder="Titlu"
-          onChange={(e) => setTitlu(e.target.value)}
+          onChange={(e) => setForm({ ...form, titlu: e.target.value })}
           style={styles.input}
         />
 
-        <input
-          placeholder="Oraș"
-          onChange={(e) => setOras(e.target.value)}
+        {/* 🔥 SELECT ORAȘ */}
+        <select
+          onChange={(e) => setForm({ ...form, oras: e.target.value })}
           style={styles.input}
-        />
+        >
+          <option>Selectează oraș</option>
+          {orase.map((o) => (
+            <option key={o}>{o}</option>
+          ))}
+        </select>
 
         <textarea
           placeholder="Descriere"
-          onChange={(e) => setDescriere(e.target.value)}
+          onChange={(e) => setForm({ ...form, descriere: e.target.value })}
           style={styles.textarea}
+        />
+
+        {/* 🔥 UPLOAD */}
+        <input
+          type="file"
+          onChange={(e) => setPoza(e.target.files?.[0] || null)}
+          style={styles.file}
         />
 
         <button onClick={handleSubmit} style={styles.button}>
@@ -126,6 +168,10 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "8px",
     border: "1px solid #ddd",
     minHeight: "100px",
+  },
+
+  file: {
+    marginBottom: "12px",
   },
 
   button: {
