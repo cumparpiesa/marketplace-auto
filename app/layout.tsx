@@ -10,24 +10,28 @@ export default function RootLayout({
     <html lang="ro">
       <body>
 
-        {/* NAVBAR ULTRA PRO */}
+        {/* NAVBAR */}
         <nav style={{
           display: "flex",
-          justifyContent: "space-between",
           alignItems: "center",
+          justifyContent: "space-between",
           background: "#0f172a",
-          padding: "12px 20px",
+          padding: "10px 20px",
           color: "white",
-          position: "sticky",
-          top: 0,
-          zIndex: 1000
+          gap: "15px",
+          flexWrap: "wrap"
         }}>
 
           {/* LEFT */}
-          <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "15px",
+            flexWrap: "wrap"
+          }}>
             <Link href="/" style={{
-              fontSize: "20px",
               fontWeight: "bold",
+              fontSize: "18px",
               color: "#3b82f6",
               textDecoration: "none"
             }}>
@@ -42,7 +46,11 @@ export default function RootLayout({
           </div>
 
           {/* SEARCH */}
-          <div style={{ flex: 1, margin: "0 20px" }}>
+          <div style={{
+            flex: 1,
+            minWidth: "200px",
+            maxWidth: "400px"
+          }}>
             <input
               placeholder="Caută piese, firme..."
               style={{
@@ -55,52 +63,55 @@ export default function RootLayout({
           </div>
 
           {/* RIGHT */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <div style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            flexWrap: "wrap"
+          }}>
 
-            <Link href="/adauga-piesa">
-              <button style={btn}>+ Piesă</button>
-            </Link>
+            <Link href="/adauga-piesa"><button style={btn}>+ Piesă</button></Link>
+            <Link href="/adauga-dezmembrare"><button style={btn}>+ Dezmembrare</button></Link>
+            <Link href="/adauga-cerere"><button style={btn}>+ Cerere</button></Link>
+            <Link href="/adauga-firma"><button style={btn}>+ Firmă</button></Link>
 
-            <Link href="/adauga-dezmembrare">
-              <button style={btn}>+ Dezmembrare</button>
-            </Link>
-
-            <Link href="/adauga-cerere">
-              <button style={btn}>+ Cerere</button>
-            </Link>
-
-            <Link href="/adauga-firma">
-              <button style={btn}>+ Firmă</button>
-            </Link>
-
+            {/* ABONAMENT */}
             <Link href="/abonament">
               <button style={{
-                ...btn,
                 background: "gold",
                 color: "black",
-                fontWeight: "bold"
+                border: "none",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                fontWeight: "bold",
+                cursor: "pointer"
               }}>
-                PRO
+                Abonament
               </button>
             </Link>
 
+            {/* USER */}
             <div style={{
               background: "#1e293b",
               padding: "6px 10px",
-              borderRadius: "8px",
-              fontSize: "14px"
+              borderRadius: "6px",
+              fontSize: "13px"
             }}>
               admin@autoalmani.ro
             </div>
 
-            <button style={{
-              background: "#dc2626",
-              color: "white",
-              border: "none",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              cursor: "pointer"
-            }}>
+            {/* LOGOUT */}
+            <button
+              onClick={() => alert("Logout (fake momentan)")}
+              style={{
+                background: "#dc2626",
+                color: "white",
+                border: "none",
+                padding: "6px 10px",
+                borderRadius: "6px",
+                cursor: "pointer"
+              }}
+            >
               Logout
             </button>
 
@@ -108,10 +119,10 @@ export default function RootLayout({
 
         </nav>
 
-        {/* PAGE CONTENT */}
+        {/* CONTENT */}
         {children}
 
-        {/* FOOTER BUSINESS */}
+        {/* FOOTER */}
         <footer style={{
           background: "#f4f6f8",
           padding: "50px 20px",
@@ -203,7 +214,7 @@ export default function RootLayout({
   )
 }
 
-/* STYLE */
+/* STYLES */
 const btn = {
   background: "#2563eb",
   color: "white",
