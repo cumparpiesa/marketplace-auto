@@ -6,7 +6,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!)
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // 🔥 IMPORTANT
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
 export async function POST(req: Request) {
@@ -25,15 +25,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Webhook error" }, { status: 400 })
   }
 
-  // ✅ PLATA FINALIZATĂ
   if (event.type === "checkout.session.completed") {
     const session: any = event.data.object
 
     const userId = session.metadata.user_id
     const plan = session.metadata.plan
-
-    console.log("USER:", userId)
-    console.log("PLAN:", plan)
 
     if (userId) {
       await supabase
