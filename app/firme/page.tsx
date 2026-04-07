@@ -1,67 +1,36 @@
-"use client"
+import LayoutGrid from "@/components/LayoutGrid";
+import Filters from "@/components/Filters";
+import Card from "@/components/Card";
 
-import { useEffect, useState } from "react"
-import { useParams } from "next/navigation"
-import { supabase } from "@/lib/supabaseClient"
+const firme = [
+  {
+    title: "Piese Auto Iasi",
+    city: "Iasi",
+    image: "https://picsum.photos/300"
+  },
+  {
+    title: "Auto Cluj",
+    city: "Cluj",
+    image: "https://picsum.photos/301"
+  }
+];
 
-export default function FirmaPage() {
-  const { id } = useParams()
-  const [firma, setFirma] = useState<any>(null)
-
-  useEffect(() => {
-    const fetchFirma = async () => {
-      const { data } = await supabase
-        .from("firme")
-        .select("*")
-        .eq("id", id)
-        .single()
-
-      setFirma(data)
-    }
-
-    fetchFirma()
-  }, [id])
-
-  if (!firma) return <p style={{ padding: 20 }}>Se încarcă...</p>
-
+export default function Page() {
   return (
-    <div style={styles.container}>
+    <LayoutGrid sidebar={<Filters />}>
 
-      <img
-        src={firma.image_url || "https://via.placeholder.com/800x300"}
-        style={styles.image}
-      />
+      <h1>Descoperă firme</h1>
 
-      <h1>{firma.nume}</h1>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, 1fr)",
+        gap: 20
+      }}>
+        {firme.map((f, i) => (
+          <Card key={i} item={f} />
+        ))}
+      </div>
 
-      <p>📍 {firma.oras}</p>
-
-      <p>{firma.descriere}</p>
-
-      <p>📞 {firma.telefon}</p>
-
-      {firma.plan === "pro" && (
-        <span style={styles.badge}>PRO</span>
-      )}
-
-    </div>
-  )
-}
-
-const styles = {
-  container: {
-    padding: "20px",
-  },
-  image: {
-    width: "100%",
-    maxHeight: "300px",
-    objectFit: "cover" as const,
-    marginBottom: "20px",
-  },
-  badge: {
-    background: "gold",
-    padding: "5px 10px",
-    borderRadius: "5px",
-    fontWeight: "bold",
-  },
+    </LayoutGrid>
+  );
 }
