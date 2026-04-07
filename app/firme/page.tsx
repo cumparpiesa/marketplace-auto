@@ -1,7 +1,6 @@
 import LayoutGrid from "@/components/LayoutGrid";
 import Filters from "@/components/Filters";
-import Card from "@/components/Card";
-
+import Card from "../../components/Card";
 const firme = [
   {
     title: "Piese Auto Iasi",
