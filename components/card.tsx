@@ -1,20 +1,22 @@
+"use client";
+
 import Link from "next/link";
 
-export default function Card({ item }: any) {
+export default function Card({ item, link = "/firme" }: any) {
   return (
-    <div style={{
-      background: "white",
-      borderRadius: 12,
-      overflow: "hidden"
-    }}>
-      <img src={item.image} style={{ width: "100%", height: 160 }} />
+    <div className="card">
+      <img src={item.image || "/placeholder.jpg"} className="card-img" />
 
-      <div style={{ padding: 10 }}>
-        <h3>{item.title}</h3>
-        <p>{item.city}</p>
+      {item.pro && <span className="badge">PRO</span>}
 
-        <Link href="#">
-          <button>Vezi detalii</button>
+      <div className="card-body">
+        <h3>{item.nume}</h3>
+
+        <p className="muted">📍 {item.oras}</p>
+        <p>{item.descriere}</p>
+
+        <Link href={`${link}/${item.id}`}>
+          <button className="btn">Vezi detalii</button>
         </Link>
       </div>
     </div>
