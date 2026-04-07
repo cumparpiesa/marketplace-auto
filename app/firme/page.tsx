@@ -1,5 +1,5 @@
-import LayoutGrid from "@/components/LayoutGrid";
-import Filters from "@/components/Filters";
+import LayoutGrid from "../../components/LayoutGrid";
+import Filters from "../../components/filters";
 import Card from "../../components/Card";
 const firme = [
   {
